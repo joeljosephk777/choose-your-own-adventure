@@ -27,6 +27,25 @@ Generated outputs:
 - `output/cot-stories/story-0001.txt` (and additional numbered files): one complete path per file
 - `output/cot-stories/manifest.json`: index of generated story files and page paths
 
+## Open the Web App
+
+Serve the `web/` folder with a local HTTP server, then open the reader, graph viewer, or author tool in your browser.
+
+Example:
+
+```bash
+cd web
+python3 -m http.server 8765
+```
+
+Open:
+
+- `http://localhost:8765/index.html` for the reader
+- `http://localhost:8765/graph.html` for the story graph
+- `http://localhost:8765/author.html` for the authoring tool
+
+The authoring tool keeps a browser draft, can export updated JSON, and can save to a chosen file path when the browser file picker is available.
+
 Optional flags:
 
 ```bash

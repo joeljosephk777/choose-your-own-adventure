@@ -20,20 +20,26 @@
 - [x] "Read from here" button — opens index.html at the selected page
 - [x] Link from reader (index.html) to graph (graph.html)
 - [x] index.html supports ?page=N URL param so graph can open reader at any page
-- [ ] Highlight the path taken as the reader progresses (reader ↔ graph sync)
+- [x] Highlight the path taken as the reader progresses (reader ↔ graph sync)
 - [ ] Show unfinished branches (author-mode nodes with no choices yet written)
 
 ## Phase 3: Authoring Tool
-- [ ] Upload a new story segment (text file or text area input)
-- [ ] Assign it a page number
-- [ ] Define outgoing choices (link this page to one or more other pages)
-- [ ] Save the new segment to the pages directory
-- [ ] Regenerate the story graph after adding a new segment
-- [ ] Display the updated graph with the new node highlighted
-- [ ] Show which branches are unfinished (leaf nodes that are not marked as endings)
-- [ ] Show which endings are shared by multiple paths (converging branches)
-- [ ] Allow editing existing story segments
-- [ ] Allow deleting a story segment and unlinking it from the graph
+- [x] Upload a new story segment (text file or text area input)
+- [x] Assign it a page number
+- [x] Define outgoing choices (link this page to one or more other pages)
+- [x] Save the new segment to the pages directory
+- [x] Regenerate the story graph after adding a new segment
+- [x] Display the updated graph with the new node highlighted
+- [x] Show which branches are unfinished (leaf nodes that are not marked as endings)
+- [x] Show which endings are shared by multiple paths (converging branches)
+- [x] Allow editing existing story segments
+- [x] Allow deleting a story segment and unlinking it from the graph
+- [ ] Adding a new page should appropriately sync across the different views. 
+- [ ] Read only viewer to read the entire story created by author
+- [ ] Visualize the shared endings, endings, unfinished endings using a filter feature. 
+
+
+
 
 ## Phase 4: Web Server / Backend
 - [ ] Set up a simple backend (Python Flask or similar) to serve pages data as JSON
@@ -46,9 +52,9 @@
 - [ ] API endpoint: POST `/graph/rebuild` — rebuild graph from current pages
 
 ## Phase 5: Project Hygiene
-- [ ] Update session-logs/AI-session-logs.json after each work session
-- [ ] Keep Codebase.md up to date as new files are added
-- [ ] Write a short section in README.md for how to run the web app
+- [x] Update session-logs/AI-session-logs.json after each work session
+- [x] Keep Codebase.md up to date as new files are added
+- [x] Write a short section in README.md for how to run the web app
 - [ ] Test the full pipeline: extract → graph → stories → web reader → authoring tool
 
 ## Completed

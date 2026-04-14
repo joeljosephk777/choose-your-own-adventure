@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cave of Time — Author Tool</title>
+    <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f8f7f4;
+            --panel: #ffffff;
+            --panel-soft: #fbfaf8;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #ddd8ce;
+            --accent: #8b3a0f;
+            --accent-2: #b45309;
+            --green-bg: #ecfdf5;
+            --green-bd: #16a34a;
+            --amber-bg: #fffbeb;
+            --amber-bd: #d97706;
+            --gray-bg: #eef2f7;
+            --gray-bd: #94a3b8;
+            --red-bg: #fef2f2;
+            --red-bd: #dc2626;
+            --blue-bg: #eff6ff;
+            --blue-bd: #2563eb;
+            --purple-bg: #f5f3ff;
+            --purple-bd: #7c3aed;
+            --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(180deg, #faf8f3 0%, #f4f1ea 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            height: 68px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 0 20px;
+        }
+
+        header h1 {
+            font-size: 1rem;
+            color: var(--accent);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        header .subtitle {
+            font-size: 0.84rem;
+            color: var(--muted);
+        }
+
+        .header-spacer {
+            flex: 1;
+        }
+
+        .header-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            padding: 7px 12px;
+            border-radius: 9px;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+
+        .header-link:hover {
+            background: #f4efe6;
+            color: var(--text);
+            border-color: #c7bca8;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 320px minmax(0, 1fr) 380px;
+            height: calc(100vh - 68px);
+            gap: 12px;
+            padding: 12px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(250, 248, 243, 0.9), rgba(255, 255, 255, 0.95));
+        }
+
+        .panel-header h2 {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .panel-header .title {
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .panel-body {
+            padding: 14px 16px 16px;
+            height: calc(100% - 68px);
+            overflow: auto;
+        }
+
+        .stack {
+            display: grid;
+            gap: 12px;
+        }
+
+        .card {
+            background: var(--panel-soft);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .summary {
+            border-radius: 12px;
+            padding: 10px 12px;
+            background: white;
+            border: 1px solid var(--border);
+        }
+
+        .summary .label {
+            font-size: 0.71rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
+        .summary .value {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .value.green {
+            color: #15803d;
+        }
+
+        .value.amber {
+            color: #b45309;
+        }
+
+        .value.gray {
+            color: #475569;
+        }
+
+        .value.red {
+            color: #dc2626;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--text);
+            font-size: 0.82rem;
+            padding: 8px 11px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.12s, background 0.12s, border-color 0.12s;
+        }
+
+        .btn:hover {
+            background: #f7f3ea;
+            border-color: #c7bca8;
+            transform: translateY(-1px);
+        }
+
+        .btn.primary {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .btn.primary:hover {
+            background: #6d2d0b;
+            border-color: #6d2d0b;
+        }
+
+        .btn.good {
+            background: #0f766e;
+            color: white;
+            border-color: #0f766e;
+        }
+
+        .btn.good:hover {
+            background: #115e59;
+            border-color: #115e59;
+        }
+
+        .btn.danger {
+            background: #fff1f2;
+            color: #b91c1c;
+            border-color: #fecdd3;
+        }
+
+        .btn.danger:hover {
+            background: #ffe4e6;
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: default;
+            transform: none;
+        }
+
+        .field-group {
+            display: grid;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .field-group label {
+            font-size: 0.78rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .field-group input[type="text"],
+        .field-group input[type="number"],
+        .field-group textarea,
+        .field-group select {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: white;
+            padding: 10px 11px;
+            color: var(--text);
+            font: inherit;
+            outline: none;
+        }
+
+        .field-group textarea {
+            min-height: 270px;
+            resize: vertical;
+            line-height: 1.55;
+        }
+
+        .check-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88rem;
+            color: var(--text);
+        }
+
+        .mini-note {
+            font-size: 0.76rem;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        .page-list {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .page-item {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: white;
+            padding: 10px 11px;
+            cursor: pointer;
+            transition: border-color 0.12s, background 0.12s, transform 0.12s;
+        }
+
+        .page-item:hover {
+            border-color: #c7bca8;
+            background: #faf7ef;
+            transform: translateY(-1px);
+        }
+
+        .page-item.active {
+            border-color: var(--blue-bd);
+            background: var(--blue-bg);
+        }
+
+        .page-item .top {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: baseline;
+        }
+
+        .page-item .num {
+            font-weight: 800;
+        }
+
+        .page-item .snippet {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 0.78rem;
+            line-height: 1.45;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 7px;
+        }
+
+        .badge {
+            font-size: 0.68rem;
+            border-radius: 999px;
+            padding: 3px 7px;
+            border: 1px solid transparent;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .badge.green {
+            background: var(--green-bg);
+            color: #166534;
+            border-color: var(--green-bd);
+        }
+
+        .badge.amber {
+            background: var(--amber-bg);
+            color: #92400e;
+            border-color: var(--amber-bd);
+        }
+
+        .badge.gray {
+            background: var(--gray-bg);
+            color: #475569;
+            border-color: var(--gray-bd);
+        }
+
+        .badge.red {
+            background: var(--red-bg);
+            color: #991b1b;
+            border-color: var(--red-bd);
+        }
+
+        .badge.blue {
+            background: var(--blue-bg);
+            color: #1d4ed8;
+            border-color: var(--blue-bd);
+        }
+
+        .badge.purple {
+            background: var(--purple-bg);
+            color: #6d28d9;
+            border-color: var(--purple-bd);
+        }
+
+        .list-block {
+            display: grid;
+            gap: 8px;
+        }
+
+        .list-block h3 {
+            font-size: 0.72rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 2px;
+        }
+
+        .info-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: white;
+            padding: 5px 9px;
+            font-size: 0.76rem;
+            color: var(--muted);
+        }
+
+        .graph-toolbar {
+            position: absolute;
+            bottom: 14px;
+            left: 14px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            z-index: 2;
+        }
+
+        .graph-wrap {
+            position: relative;
+            height: 100%;
+            background: #f5f1ea;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        #cy {
+            width: 100%;
+            height: 100%;
+        }
+
+        #graph-status {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: 0.76rem;
+            color: var(--muted);
+            z-index: 2;
+        }
+
+        .legend {
+            position: absolute;
+            right: 14px;
+            top: 14px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 0.73rem;
+            color: var(--muted);
+            line-height: 1.8;
+            z-index: 2;
+            max-width: 250px;
+        }
+
+        .legend-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            border: 1.5px solid transparent;
+            flex-shrink: 0;
+        }
+
+        .choice-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .choice-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 90px auto;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .choice-row input {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 9px 10px;
+            font: inherit;
+            background: white;
+        }
+
+        .choice-row .remove {
+            justify-self: end;
+            min-width: 36px;
+            padding: 9px 10px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .section-title h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+        }
+
+        .status-line {
+            font-size: 0.79rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .status-line strong {
+            color: var(--text);
+        }
+
+        .file-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .file-row input[type="file"] {
+            font-size: 0.8rem;
+            max-width: 100%;
+        }
+
+        .split-note {
+            font-size: 0.74rem;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+
+        @media (max-width: 1280px) {
+            body {
+                overflow: auto;
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .panel {
+                min-height: 360px;
+            }
+
+            .graph-wrap {
+                height: 72vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Cave of Time — Author Tool</h1>
+        <div class="subtitle">Create, edit, delete, and export pages with live graph diagnostics.</div>
+        <div class="header-spacer"></div>
+        <a class="header-link" href="index.html">Reader</a>
+        <a class="header-link" href="graph.html">Story Graph</a>
+    </header>
+
+    <div class="layout">
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Story Library</h2>
+                <div class="title">Pages and diagnostics</div>
+            </div>
+            <div class="panel-body">
+                <div class="stack">
+                    <div class="card">
+                        <div class="summary-grid">
+                            <div class="summary">
+                                <div class="label">Written</div>
+                                <div class="value green" id="count-written">0</div>
+                            </div>
+                            <div class="summary">
+                                <div class="label">Unfinished</div>
+                                <div class="value amber" id="count-unfinished">0</div>
+                            </div>
+                            <div class="summary">
+                                <div class="label">Shared endings</div>
+                                <div class="value purple" id="count-shared">0</div>
+                            </div>
+                            <div class="summary">
+                                <div class="label">Missing refs</div>
+                                <div class="value red" id="count-missing">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="field-group">
+                            <label for="filter-text">Search pages</label>
+                            <input id="filter-text" type="text" placeholder="Search by page number or text" />
+                        </div>
+                        <div class="controls-row">
+                            <button class="btn primary" id="btn-new-page">New page</button>
+                            <button class="btn" id="btn-clear-filters">Clear filters</button>
+                        </div>
+                        <div class="controls-row" style="margin-top:8px">
+                            <button class="btn" data-filter="all">All</button>
+                            <button class="btn" data-filter="written">Written</button>
+                            <button class="btn" data-filter="unfinished">Unfinished</button>
+                            <button class="btn" data-filter="missing">Missing</button>
+                            <button class="btn" data-filter="shared">Shared endings</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-title">
+                            <h3>Page index</h3>
+                            <span class="info-chip" id="draft-note">Draft stored locally</span>
+                        </div>
+                        <div class="page-list" id="page-list"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-title">
+                            <h3>Diagnostics</h3>
+                            <span class="info-chip" id="dirty-chip">Clean</span>
+                        </div>
+                        <div class="list-block">
+                            <div>
+                                <h3>Unfinished branches</h3>
+                                <div class="page-list" id="unfinished-list"></div>
+                            </div>
+                            <div>
+                                <h3>Shared endings</h3>
+                                <div class="page-list" id="shared-list"></div>
+                            </div>
+                            <div>
+                                <h3>Missing targets</h3>
+                                <div class="page-list" id="missing-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Graph</h2>
+                <div class="title">Live authoring map</div>
+            </div>
+            <div class="panel-body" style="padding:0; height: calc(100% - 68px);">
+                <div class="graph-wrap">
+                    <div id="graph-status">Loading graph…</div>
+                    <div class="legend">
+                        <div class="legend-row">
+                            <div class="legend-dot" style="background:var(--green-bg);border-color:var(--green-bd)">
+                            </div> Written and linked
+                        </div>
+                        <div class="legend-row">
+                            <div class="legend-dot" style="background:var(--amber-bg);border-color:var(--amber-bd)">
+                            </div> Unfinished branch
+                        </div>
+                        <div class="legend-row">
+                            <div class="legend-dot" style="background:var(--red-bg);border-color:var(--red-bd)"></div>
+                            Missing target
+                        </div>
+                        <div class="legend-row">
+                            <div class="legend-dot" style="background:var(--gray-bg);border-color:var(--gray-bd)"></div>
+                            Terminal / inactive
+                        </div>
+                        <div class="legend-row">
+                            <div class="legend-dot" style="background:var(--purple-bg);border-color:var(--purple-bd)">
+                            </div> Shared ending
+                        </div>
+                    </div>
+                    <div id="cy"></div>
+                    <div class="graph-toolbar">
+                        <button class="btn" id="btn-fit">Fit</button>
+                        <button class="btn" id="btn-zoom-in">Zoom in</button>
+                        <button class="btn" id="btn-zoom-out">Zoom out</button>
+                        <button class="btn" id="btn-focus-selection">Focus selection</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Editor</h2>
+                <div class="title" id="editor-title">Select a page to edit</div>
+            </div>
+            <div class="panel-body">
+                <div class="stack">
+                    <div class="card">
+                        <div class="section-title">
+                            <h3>Actions</h3>
+                            <span class="info-chip" id="save-target-label">Saving to browser draft</span>
+                        </div>
+                        <div class="controls-row">
+                            <button class="btn good" id="btn-save-page">Save page</button>
+                            <button class="btn" id="btn-save-file">Save to file</button>
+                            <button class="btn" id="btn-download-json">Download JSON</button>
+                            <button class="btn danger" id="btn-delete-page">Delete page</button>
+                        </div>
+                        <div class="controls-row" style="margin-top:8px">
+                            <button class="btn" id="btn-reset-draft">Reset draft</button>
+                        </div>
+                        <div class="split-note" style="margin-top:8px">
+                            Edits are stored in browser localStorage automatically. Use Save to file or Download JSON to
+                            persist them to disk.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-title">
+                            <h3>Import segment</h3>
+                            <span class="info-chip">Text or file</span>
+                        </div>
+                        <div class="file-row">
+                            <input id="segment-file" type="file" accept=".txt,text/plain" />
+                            <button class="btn" id="btn-load-file">Load file</button>
+                        </div>
+                        <div class="split-note" style="margin-top:8px">
+                            If the text starts with "Page N", the page number will be filled automatically.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="field-group">
+                            <label for="page-number">Page number</label>
+                            <input id="page-number" type="number" min="1" step="1" />
+                        </div>
+                        <div class="field-group">
+                            <label for="page-text">Story text</label>
+                            <textarea id="page-text" placeholder="Paste or type the page text here"></textarea>
+                        </div>
+                        <div class="check-row">
+                            <input id="page-terminal" type="checkbox" />
+                            <label for="page-terminal">Mark as terminal ending</label>
+                        </div>
+                        <div class="split-note" style="margin-top:8px">
+                            Choices are stored as labels plus destination page numbers. The graph and diagnostics
+                            refresh immediately after save.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-title">
+                            <h3>Choices</h3>
+                            <button class="btn" id="btn-infer-choices">Infer from text</button>
+                        </div>
+                        <div class="choice-list" id="choice-list"></div>
+                        <div class="controls-row" style="margin-top:8px">
+                            <button class="btn" id="btn-add-choice">Add choice</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-title">
+                            <h3>Selection status</h3>
+                            <span class="info-chip" id="selection-state">Nothing selected</span>
+                        </div>
+                        <div class="status-line" id="selection-details">Choose a page from the list or graph to edit it.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'cyoa_author_draft_v1';
+        const PAGE_FILE_RE = /^(\d+)-CoT\.txt$/;
+        const CHOICE_BLOCK_RE = /(If\s+[^\n]{3,120}?)[,.]?\s*\n\s*(?:tum|turn|go|return|follow|take)\s+to\s+page\s+(\d+)/gi;
+        const BARE_TURN_RE = /(?:tum|turn|go)\s+to\s+page\s+(\d+)/gi;
+
+        let baseline = { meta: { start_page: 2 }, pages: {} };
+        let draft = {};
+        let selectedPage = null;
+        let originalSelectionPage = null;
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let cy = null;
+        let saveHandle = null;
+        let dirty = false;
+
+        const el = id => document.getElementById(id);
+
+        function clone(obj) {
+            return JSON.parse(JSON.stringify(obj));
+        }
+
+        function normalizeChoice(choice) {
+            return {
+                label: String(choice.label || '').trim() || `Turn to page ${choice.page}`,
+                page: Number(choice.page),
+            };
+        }
+
+        function normalizePage(num, page) {
+            const pageNum = Number(num);
+            const choices = Array.isArray(page?.choices) ? page.choices.map(normalizeChoice).filter(c => Number.isFinite(c.page)) : [];
+            const terminal = typeof page?.is_terminal === 'boolean' ? page.is_terminal : choices.length === 0;
+            return {
+                page: pageNum,
+                text: String(page?.text || '').trim(),
+                choices,
+                is_terminal: terminal,
+            };
+        }
+
+        function sanitizeDraft(source) {
+            const out = {};
+            for (const [key, page] of Object.entries(source || {})) {
+                const num = Number(key);
+                if (Number.isFinite(num) && num > 0) {
+                    out[String(num)] = normalizePage(num, page);
+                }
+            }
+            return out;
+        }
+
+        function loadBaseline() {
+            baseline = { meta: { start_page: 2 }, pages: {} };
+            draft = {};
+            fetch('pages.json')
+                .then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                    return r.json();
+                })
+                .then(data => {
+                    baseline = data;
+                    draft = clone(data.pages || {});
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        try {
+                            const parsed = JSON.parse(stored);
+                            if (parsed && parsed.pages) {
+                                draft = sanitizeDraft(parsed.pages);
+                            }
+                        } catch (_) { }
+                    }
+                    markClean(true);
+                    if (!selectedPage) {
+                        selectedPage = String(data.meta?.start_page || 2);
+                        originalSelectionPage = selectedPage;
+                    }
+                    ensureSelectionExists();
+                    renderAll();
+                })
+                .catch(err => {
+                    el('graph-status').textContent = `Could not load pages.json: ${err.message}`;
+                });
+        }
+
+        function ensureSelectionExists() {
+            const start = String(selectedPage || baseline.meta?.start_page || 2);
+            if (!draft[start] && !draft[String(start)]) {
+                draft[String(start)] = normalizePage(start, { page: Number(start), text: '', choices: [], is_terminal: false });
+            }
+            selectedPage = String(start);
+            originalSelectionPage = String(start);
+            loadEditor(selectedPage);
+        }
+
+        function allPageNumbers() {
+            const nums = new Set();
+            Object.keys(draft).forEach(n => nums.add(Number(n)));
+            Object.values(draft).forEach(page => {
+                (page.choices || []).forEach(choice => nums.add(Number(choice.page)));
+            });
+            nums.add(Number(baseline.meta?.start_page || 2));
+            return [...nums].filter(Number.isFinite).sort((a, b) => a - b);
+        }
+
+        function pageExists(pageNum) {
+            return Boolean(draft[String(pageNum)]);
+        }
+
+        function refsCountMap() {
+            const counts = {};
+            for (const page of Object.values(draft)) {
+                for (const choice of page.choices || []) {
+                    counts[String(choice.page)] = (counts[String(choice.page)] || 0) + 1;
+                }
+            }
+            return counts;
+        }
+
+        function pageStatus(pageNum, refs) {
+            const key = String(pageNum);
+            const page = draft[key];
+            if (!page) return { kind: 'missing', label: 'Missing target' };
+            const hasChoices = page.choices.length > 0;
+            const missingTargets = page.choices.some(choice => !draft[String(choice.page)]);
+            if (page.is_terminal || !hasChoices) {
+                return refs > 1 && page.is_terminal
+                    ? { kind: 'shared', label: 'Shared ending' }
+                    : page.is_terminal
+                        ? { kind: 'terminal', label: 'Ending' }
+                        : { kind: 'unfinished', label: 'Unfinished branch' };
+            }
+            if (missingTargets) {
+                return { kind: 'orphan', label: 'Broken link' };
+            }
+            return { kind: 'written', label: 'Written' };
+        }
+
+        function filteredPageNumbers() {
+            const refs = refsCountMap();
+            const query = searchQuery.trim().toLowerCase();
+            return allPageNumbers().filter(num => {
+                const page = draft[String(num)];
+                const status = pageStatus(num, refs[String(num)] || 0).kind;
+                const text = page?.text || '';
+                const haystack = `${num} ${text}`.toLowerCase();
+                const matchesQuery = !query || haystack.includes(query);
+                const matchesFilter = currentFilter === 'all'
+                    || (currentFilter === 'written' && status === 'written')
+                    || (currentFilter === 'unfinished' && status === 'unfinished')
+                    || (currentFilter === 'missing' && status === 'missing')
+                    || (currentFilter === 'shared' && status === 'shared');
+                return matchesQuery && matchesFilter;
+            });
+        }
+
+        function summaryData() {
+            const refs = refsCountMap();
+            const numbers = allPageNumbers();
+            let written = 0;
+            let unfinished = 0;
+            let shared = 0;
+            let missing = 0;
+            numbers.forEach(num => {
+                const status = pageStatus(num, refs[String(num)] || 0).kind;
+                if (status !== 'missing') written += 1;
+                if (status === 'unfinished') unfinished += 1;
+                if (status === 'shared') shared += 1;
+                if (status === 'missing') missing += 1;
+            });
+            return { written, unfinished, shared, missing };
+        }
+
+        function snippet(page) {
+            if (!page || !page.text) return 'No text written yet.';
+            const clean = page.text.replace(/\s+/g, ' ').trim();
+            return clean.length > 120 ? clean.slice(0, 120) + '…' : clean;
+        }
+
+        function setDirty(value) {
+            dirty = value;
+            el('dirty-chip').textContent = dirty ? 'Unsaved changes' : 'Clean';
+            el('dirty-chip').style.borderColor = dirty ? 'var(--amber-bd)' : 'var(--border)';
+            el('dirty-chip').style.color = dirty ? '#92400e' : 'var(--muted)';
+            if (dirty) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({ meta: baseline.meta, pages: draft }));
+            }
+        }
+
+        function markClean(value) {
+            dirty = !value;
+            el('dirty-chip').textContent = value ? 'Clean' : 'Unsaved changes';
+            el('dirty-chip').style.borderColor = value ? 'var(--border)' : 'var(--amber-bd)';
+            el('dirty-chip').style.color = value ? 'var(--muted)' : '#92400e';
+        }
+
+        function inferChoices(text) {
+            CHOICE_BLOCK_RE.lastIndex = 0;
+            BARE_TURN_RE.lastIndex = 0;
+            const choices = [];
+            const seen = new Set();
+            let match;
+            while ((match = CHOICE_BLOCK_RE.exec(text)) !== null) {
+                const label = match[1].trim().replace(/\s+/g, ' ');
+                const page = Number(match[2]);
+                const key = `${label}-${page}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    choices.push({ label, page });
+                }
+            }
+            while ((match = BARE_TURN_RE.exec(text)) !== null) {
+                const page = Number(match[1]);
+                const key = `Turn to page ${page}-${page}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    choices.push({ label: `Turn to page ${page}`, page });
+                }
+            }
+            return choices;
+        }
+
+        function fileToText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(String(reader.result || ''));
+                reader.onerror = () => reject(reader.error || new Error('Could not read file'));
+                reader.readAsText(file);
+            });
+        }
+
+        function parseSegmentText(rawText) {
+            const lines = String(rawText || '').split(/\r?\n/);
+            let pageNumber = null;
+            let text = rawText || '';
+            if (lines.length > 0) {
+                const first = lines[0].trim();
+                const match = first.match(/^Page\s+(\d+)$/i);
+                if (match) {
+                    pageNumber = Number(match[1]);
+                    text = lines.slice(1).join('\n').trimStart();
+                }
+            }
+            return { pageNumber, text };
+        }
+
+        function loadEditor(pageNum) {
+            const page = draft[String(pageNum)] || normalizePage(pageNum, { page: Number(pageNum), text: '', choices: [], is_terminal: false });
+            el('page-number').value = page.page;
+            el('page-text').value = page.text || '';
+            el('page-terminal').checked = Boolean(page.is_terminal);
+            renderChoiceEditor(page.choices || []);
+            el('editor-title').textContent = `Page ${page.page}`;
+            el('selection-state').textContent = pageExists(page.page) ? 'Editing existing page' : 'Editing new page';
+            el('selection-details').textContent = pageExists(page.page)
+                ? `Page ${page.page} is already in the draft. Save updates to refresh the graph.`
+                : `Page ${page.page} will be created when you save.`;
+            selectedPage = String(page.page);
+            originalSelectionPage = String(page.page);
+            renderAllHighlights();
+        }
+
+        function renderChoiceEditor(choices) {
+            const list = el('choice-list');
+            list.innerHTML = '';
+            const items = choices.length ? choices : [{ label: '', page: '' }];
+            items.forEach((choice, idx) => {
+                const row = document.createElement('div');
+                row.className = 'choice-row';
+                row.innerHTML = `
+          <input type="text" class="choice-label" placeholder="Choice label" value="${escapeHtml(choice.label || '')}" />
+          <input type="number" class="choice-page" min="1" step="1" placeholder="Page" value="${choice.page || ''}" />
+          <button class="btn danger remove" type="button">Remove</button>
+        `;
+                row.querySelector('.remove').addEventListener('click', () => {
+                    row.remove();
+                    if (!list.querySelector('.choice-row')) addChoiceRow();
+                });
+                list.appendChild(row);
+            });
+        }
+
+        function addChoiceRow(label = '', page = '') {
+            const list = el('choice-list');
+            const row = document.createElement('div');
+            row.className = 'choice-row';
+            row.innerHTML = `
+        <input type="text" class="choice-label" placeholder="Choice label" value="${escapeHtml(label)}" />
+        <input type="number" class="choice-page" min="1" step="1" placeholder="Page" value="${page}" />
+        <button class="btn danger remove" type="button">Remove</button>
+      `;
+            row.querySelector('.remove').addEventListener('click', () => {
+                row.remove();
+                if (!list.querySelector('.choice-row')) addChoiceRow();
+            });
+            list.appendChild(row);
+        }
+
+        function readChoiceEditor() {
+            const choices = [];
+            const rows = [...el('choice-list').querySelectorAll('.choice-row')];
+            rows.forEach(row => {
+                const label = row.querySelector('.choice-label').value.trim();
+                const page = Number(row.querySelector('.choice-page').value);
+                if (label || Number.isFinite(page)) {
+                    if (label && Number.isFinite(page)) {
+                        choices.push({ label, page });
+                    }
+                }
+            });
+            return choices;
+        }
+
+        function savePage() {
+            const pageNum = Number(el('page-number').value);
+            if (!Number.isFinite(pageNum) || pageNum <= 0) {
+                alert('Enter a valid page number.');
+                return;
+            }
+            const text = el('page-text').value.trim();
+            const choices = readChoiceEditor().map(normalizeChoice);
+            const isTerminal = Boolean(el('page-terminal').checked);
+            const oldKey = originalSelectionPage && String(originalSelectionPage);
+            const newKey = String(pageNum);
+
+            if (oldKey && oldKey !== newKey && draft[oldKey]) {
+                if (!confirm(`Move page ${oldKey} to ${newKey}? This will rename the page number.`)) {
+                    return;
+                }
+                updateReferences(oldKey, newKey);
+                delete draft[oldKey];
+            }
+
+            draft[newKey] = normalizePage(pageNum, { page: pageNum, text, choices, is_terminal: isTerminal });
+            selectedPage = newKey;
+            originalSelectionPage = newKey;
+            persistDraft();
+            markClean(true);
+            renderAll();
+            selectPage(newKey, { focusGraph: true });
+        }
+
+        function updateReferences(oldNum, newNum) {
+            Object.values(draft).forEach(page => {
+                page.choices = (page.choices || []).map(choice => choice.page === Number(oldNum) ? { ...choice, page: Number(newNum) } : choice);
+            });
+        }
+
+        function deletePage() {
+            const key = String(el('page-number').value || selectedPage || '');
+            if (!key || !draft[key]) {
+                alert('Select a written page to delete.');
+                return;
+            }
+            if (!confirm(`Delete page ${key} and remove incoming references?`)) {
+                return;
+            }
+            delete draft[key];
+            scrubReferences(key);
+            if (!draft[String(baseline.meta?.start_page || 2)]) {
+                draft[String(baseline.meta?.start_page || 2)] = normalizePage(Number(baseline.meta?.start_page || 2), { page: Number(baseline.meta?.start_page || 2), text: '', choices: [], is_terminal: false });
+            }
+            persistDraft();
+            markClean(true);
+            renderAll();
+            const next = allPageNumbers()[0] || baseline.meta?.start_page || 2;
+            selectPage(String(next), { focusGraph: true });
+        }
+
+        function scrubReferences(target) {
+            const num = Number(target);
+            Object.values(draft).forEach(page => {
+                page.choices = (page.choices || []).filter(choice => Number(choice.page) !== num);
+            });
+        }
+
+        function persistDraft() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ meta: baseline.meta, pages: draft }));
+            el('save-target-label').textContent = 'Saved to browser draft';
+        }
+
+        function buildExportPayload() {
+            const pageNumbers = allPageNumbers();
+            const pages = {};
+            pageNumbers.forEach(num => {
+                if (draft[String(num)]) {
+                    pages[String(num)] = normalizePage(num, draft[String(num)]);
+                }
+            });
+            return {
+                meta: {
+                    start_page: baseline.meta?.start_page || 2,
+                    total_pages: Object.keys(pages).length,
+                    page_numbers: pageNumbers,
+                },
+                pages,
+            };
+        }
+
+        function downloadJson() {
+            const blob = new Blob([JSON.stringify(buildExportPayload(), null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pages.json';
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 500);
+        }
+
+        async function saveToFile() {
+            try {
+                if (!window.showSaveFilePicker) {
+                    downloadJson();
+                    return;
+                }
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: 'pages.json',
+                    types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }],
+                });
+                const writable = await handle.createWritable();
+                await writable.write(JSON.stringify(buildExportPayload(), null, 2));
+                await writable.close();
+                saveHandle = handle;
+                el('save-target-label').textContent = 'Saved to file';
+            } catch (_) { }
+        }
+
+        function selectPage(pageNum, opts = {}) {
+            const key = String(pageNum);
+            selectedPage = key;
+            if (!draft[key]) {
+                draft[key] = normalizePage(Number(key), { page: Number(key), text: '', choices: [], is_terminal: false });
+            }
+            loadEditor(key);
+            highlightPage(key);
+            if (opts.focusGraph !== false) {
+                const node = cy && cy.getElementById(`p${key}`);
+                if (node && node.length) {
+                    cy.animate({ center: { eles: node }, zoom: Math.min(1.5, Math.max(0.35, cy.zoom())) }, { duration: 300 });
+                }
+            }
+        }
+
+        function chooseFromGraph(pageNum) {
+            selectPage(pageNum, { focusGraph: true });
+        }
+
+        function buildGraph() {
+            if (cy) {
+                cy.destroy();
+            }
+
+            const refs = refsCountMap();
+            const nodes = [];
+            const edges = [];
+            const ids = allPageNumbers();
+
+            ids.forEach(num => {
+                const page = draft[String(num)];
+                const refCount = refs[String(num)] || 0;
+                const status = pageStatus(num, refCount).kind;
+                const classes = ['author-node', status].join(' ');
+                nodes.push({ group: 'nodes', data: { id: `p${num}`, label: String(num), pageNum: num }, classes });
+            });
+
+            Object.values(draft).forEach(page => {
+                (page.choices || []).forEach((choice, index) => {
+                    const target = Number(choice.page);
+                    const targetExists = Boolean(draft[String(target)]);
+                    edges.push({
+                        group: 'edges',
+                        data: {
+                            id: `e${page.page}-${target}-${index}`,
+                            source: `p${page.page}`,
+                            target: `p${target}`,
+                            label: choice.label,
+                            missing: !targetExists,
+                        },
+                        classes: targetExists ? 'author-edge' : 'author-edge missing-target',
+                    });
+                });
+            });
+
+            cy = cytoscape({
+                container: el('cy'),
+                elements: [...nodes, ...edges],
+                style: graphStyle(),
+                layout: { name: 'breadthfirst', roots: [`p${baseline.meta?.start_page || 2}`], directed: true, spacingFactor: 1.35, padding: 40 },
+                wheelSensitivity: 0.3,
+                minZoom: 0.05,
+                maxZoom: 4,
+            });
+
+            cy.on('tap', 'node', e => chooseFromGraph(e.target.data('pageNum')));
+            cy.on('tap', e => { if (e.target === cy) clearGraphSelection(); });
+            el('graph-status').textContent = `${ids.length} nodes · ${edges.length} edges`;
+            highlightPage(selectedPage || baseline.meta?.start_page || 2);
+        }
+
+        function graphStyle() {
+            return [
+                {
+                    selector: 'node', style: {
+                        label: 'data(label)',
+                        'font-size': '11px',
+                        'font-weight': '700',
+                        color: '#0f172a',
+                        'text-valign': 'center',
+                        'text-halign': 'center',
+                        width: 44,
+                        height: 28,
+                        shape: 'roundrectangle',
+                        'border-width': 1.5,
+                        'transition-property': 'background-color, border-color, border-width, opacity',
+                        'transition-duration': '0.18s',
+                    }
+                },
+                { selector: 'node.written', style: { 'background-color': 'var(--green-bg)', 'border-color': 'var(--green-bd)' } },
+                { selector: 'node.unfinished', style: { 'background-color': 'var(--amber-bg)', 'border-color': 'var(--amber-bd)' } },
+                { selector: 'node.terminal', style: { 'background-color': 'var(--gray-bg)', 'border-color': 'var(--gray-bd)', opacity: 0.92 } },
+                { selector: 'node.shared', style: { 'background-color': 'var(--green-bg)', 'border-color': 'var(--purple-bd)', 'border-width': 2.5 } },
+                { selector: 'node.orphan', style: { 'background-color': 'var(--amber-bg)', 'border-color': 'var(--red-bd)', 'border-width': 2 } },
+                { selector: 'node.missing', style: { 'background-color': 'var(--gray-bg)', 'border-color': 'var(--gray-bd)', opacity: 0.45, 'border-style': 'dashed' } },
+                { selector: 'node.selected', style: { 'border-color': 'var(--blue-bd)', 'border-width': 3.5, 'background-color': 'var(--blue-bg)' } },
+                {
+                    selector: 'edge', style: {
+                        width: 1.6,
+                        'line-color': '#94a3b8',
+                        'target-arrow-color': '#94a3b8',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier',
+                        opacity: 0.72,
+                        label: 'data(label)',
+                        'font-size': '8px',
+                        color: '#64748b',
+                        'text-background-color': '#fff',
+                        'text-background-opacity': 0.92,
+                        'text-background-padding': 2,
+                        'text-rotation': 'autorotate',
+                        'transition-property': 'opacity, line-color, width',
+                        'transition-duration': '0.18s',
+                    }
+                },
+                { selector: 'edge.author-edge', style: { 'line-color': '#94a3b8', 'target-arrow-color': '#94a3b8' } },
+                { selector: 'edge.missing-target', style: { 'line-color': 'var(--red-bd)', 'target-arrow-color': 'var(--red-bd)', 'line-style': 'dashed', opacity: 0.9 } },
+                { selector: 'edge.highlight', style: { 'line-color': 'var(--blue-bd)', 'target-arrow-color': 'var(--blue-bd)', width: 2.8, opacity: 0.95 } },
+            ];
+        }
+
+        function highlightPage(pageNum) {
+            if (!cy) return;
+            cy.nodes().removeClass('selected');
+            const node = cy.getElementById(`p${pageNum}`);
+            if (node && node.length) {
+                node.addClass('selected');
+                el('selection-state').textContent = `Selected page ${pageNum}`;
+                el('selection-details').textContent = draft[String(pageNum)]
+                    ? 'This page is loaded in the editor. Update the text, choices, or terminal state and save to refresh the graph.'
+                    : 'This page is referenced in the graph but does not exist yet. Use the editor to create it.';
+                if (node.length && cy) {
+                    cy.getElementById(`p${pageNum}`)?.addClass('selected');
+                }
+            }
+            updateHighlightedEdges(pageNum);
+        }
+
+        function updateHighlightedEdges(pageNum) {
+            if (!cy) return;
+            cy.edges().removeClass('highlight');
+            const page = draft[String(pageNum)];
+            if (!page) return;
+            (page.choices || []).forEach((choice, index) => {
+                const edge = cy.getElementById(`e${page.page}-${Number(choice.page)}-${index}`);
+                if (edge && edge.length) edge.addClass('highlight');
+            });
+        }
+
+        function clearGraphSelection() {
+            if (!cy) return;
+            cy.nodes().removeClass('selected');
+        }
+
+        function renderLists() {
+            const refs = refsCountMap();
+            const nums = allPageNumbers();
+            const items = filteredPageNumbers();
+            const list = el('page-list');
+            list.innerHTML = '';
+            items.forEach(num => {
+                const page = draft[String(num)];
+                const refCount = refs[String(num)] || 0;
+                const status = pageStatus(num, refCount);
+                const row = document.createElement('div');
+                row.className = 'page-item' + (String(num) === String(selectedPage) ? ' active' : '');
+                const badges = [];
+                if (status.kind === 'written') badges.push('<span class="badge green">Written</span>');
+                if (status.kind === 'unfinished') badges.push('<span class="badge amber">Unfinished</span>');
+                if (status.kind === 'shared') badges.push('<span class="badge purple">Shared ending</span>');
+                if (status.kind === 'missing') badges.push('<span class="badge gray">Missing</span>');
+                if (status.kind === 'orphan') badges.push('<span class="badge red">Broken link</span>');
+                row.innerHTML = `
+          <div class="top"><span class="num">Page ${num}</span><span class="badge ${status.kind === 'missing' ? 'gray' : status.kind === 'unfinished' ? 'amber' : status.kind === 'shared' ? 'purple' : 'green'}">${status.label}</span></div>
+          <div class="snippet">${escapeHtml(snippet(page))}</div>
+          <div class="badges">${badges.join('')}</div>
+        `;
+                row.addEventListener('click', () => selectPage(num, { focusGraph: true }));
+                list.appendChild(row);
+            });
+
+            renderDiagnostics();
+            renderSummary();
+            renderFilterButtons();
+        }
+
+        function renderDiagnostics() {
+            const refs = refsCountMap();
+            const unfinished = allPageNumbers().filter(num => pageStatus(num, refs[String(num)] || 0).kind === 'unfinished');
+            const shared = allPageNumbers().filter(num => pageStatus(num, refs[String(num)] || 0).kind === 'shared');
+            const missing = allPageNumbers().filter(num => pageStatus(num, refs[String(num)] || 0).kind === 'missing');
+
+            fillList('unfinished-list', unfinished, 'amber');
+            fillList('shared-list', shared, 'purple');
+            fillList('missing-list', missing, 'gray');
+        }
+
+        function fillList(id, numbers, color) {
+            const container = el(id);
+            container.innerHTML = '';
+            if (!numbers.length) {
+                container.innerHTML = '<div class="mini-note">None.</div>';
+                return;
+            }
+            numbers.slice(0, 12).forEach(num => {
+                const page = draft[String(num)];
+                const row = document.createElement('div');
+                row.className = 'page-item';
+                row.innerHTML = `
+          <div class="top"><span class="num">Page ${num}</span><span class="badge ${color}">${color === 'purple' ? 'Shared ending' : color === 'amber' ? 'Unfinished' : 'Missing'}</span></div>
+          <div class="snippet">${escapeHtml(snippet(page))}</div>
+        `;
+                row.addEventListener('click', () => selectPage(num, { focusGraph: true }));
+                container.appendChild(row);
+            });
+        }
+
+        function renderSummary() {
+            const data = summaryData();
+            el('count-written').textContent = data.written;
+            el('count-unfinished').textContent = data.unfinished;
+            el('count-shared').textContent = data.shared;
+            el('count-missing').textContent = data.missing;
+        }
+
+        function renderFilterButtons() {
+            [...document.querySelectorAll('[data-filter]')].forEach(btn => {
+                btn.classList.toggle('primary', btn.dataset.filter === currentFilter);
+            });
+        }
+
+        function renderAllHighlights() {
+            renderLists();
+            highlightPage(selectedPage || baseline.meta?.start_page || 2);
+            el('page-list').querySelectorAll('.page-item').forEach(item => {
+                item.classList.toggle('active', item.textContent.includes(`Page ${selectedPage}`));
+            });
+        }
+
+        function renderAll() {
+            renderLists();
+            buildGraph();
+            highlightPage(selectedPage || baseline.meta?.start_page || 2);
+            setDirty(dirty);
+        }
+
+        function resetDraft() {
+            if (!confirm('Reset the draft back to the baseline JSON?')) return;
+            draft = clone(baseline.pages || {});
+            selectedPage = String(baseline.meta?.start_page || 2);
+            originalSelectionPage = selectedPage;
+            saveHandle = null;
+            localStorage.removeItem(STORAGE_KEY);
+            markClean(true);
+            renderAll();
+            loadEditor(selectedPage);
+        }
+
+        function inferFromEditor() {
+            const inferred = inferChoices(el('page-text').value);
+            renderChoiceEditor(inferred);
+        }
+
+        async function loadSegmentFile() {
+            const file = el('segment-file').files[0];
+            if (!file) {
+                alert('Choose a text file first.');
+                return;
+            }
+            const raw = await fileToText(file);
+            const parsed = parseSegmentText(raw);
+            if (parsed.pageNumber) {
+                el('page-number').value = parsed.pageNumber;
+            }
+            el('page-text').value = parsed.text;
+            const choices = inferChoices(parsed.text);
+            renderChoiceEditor(choices);
+            el('page-terminal').checked = choices.length === 0;
+            if (parsed.pageNumber) {
+                selectedPage = String(parsed.pageNumber);
+                originalSelectionPage = String(parsed.pageNumber);
+                el('editor-title').textContent = `Page ${parsed.pageNumber}`;
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        // Wire up controls
+        el('btn-save-page').addEventListener('click', savePage);
+        el('btn-delete-page').addEventListener('click', deletePage);
+        el('btn-new-page').addEventListener('click', () => {
+            const nextPage = Math.max(...allPageNumbers()) + 1;
+            selectedPage = String(nextPage);
+            originalSelectionPage = String(nextPage);
+            loadEditor(nextPage);
+            highlightPage(nextPage);
+            el('page-number').focus();
+        });
+        el('btn-save-file').addEventListener('click', saveToFile);
+        el('btn-download-json').addEventListener('click', downloadJson);
+        el('btn-reset-draft').addEventListener('click', resetDraft);
+        el('btn-load-file').addEventListener('click', loadSegmentFile);
+        el('btn-add-choice').addEventListener('click', () => addChoiceRow());
+        el('btn-infer-choices').addEventListener('click', inferFromEditor);
+        el('btn-clear-filters').addEventListener('click', () => {
+            currentFilter = 'all';
+            searchQuery = '';
+            el('filter-text').value = '';
+            renderAll();
+        });
+        el('filter-text').addEventListener('input', e => {
+            searchQuery = e.target.value;
+            renderAll();
+        });
+        [...document.querySelectorAll('[data-filter]')].forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentFilter = btn.dataset.filter;
+                renderAll();
+            });
+        });
+        el('btn-fit').addEventListener('click', () => {
+            const visible = cy.nodes(':not(.hidden)');
+            cy.fit(visible.length ? visible : cy.nodes(), 40);
+        });
+        el('btn-zoom-in').addEventListener('click', () => cy.zoom(cy.zoom() * 1.18));
+        el('btn-zoom-out').addEventListener('click', () => cy.zoom(cy.zoom() * 0.84));
+        el('btn-focus-selection').addEventListener('click', () => {
+            if (!selectedPage || !cy) return;
+            const node = cy.getElementById(`p${selectedPage}`);
+            if (node && node.length) cy.animate({ center: { eles: node } }, { duration: 260 });
+        });
+
+        loadBaseline();
+    </script>
+</body>
+
+</html>

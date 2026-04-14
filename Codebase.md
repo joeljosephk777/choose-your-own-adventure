@@ -32,6 +32,11 @@ Canonical scripts in scripts/:
 - write_all_stories.py
 - render_story_graph_svg.py
 
+Web app entry points in web/:
+- index.html
+- graph.html
+- author.html
+
 Superseded scripts were deleted:
 - extract_cot.py
 - reextract_cot_spreads.py
@@ -106,6 +111,18 @@ Current visual behavior:
 - Uses a layered Sugiyama-style layout with iterative barycenter ordering
 - Colors terminal pages differently
 - Highlights the main trunk from page 2
+
+### author.html
+
+Browser-based authoring tool for creating, editing, deleting, and exporting story pages.
+
+Current behavior:
+- Loads the canonical `web/pages.json` data
+- Keeps a draft in browser localStorage
+- Lets you import a text segment, assign a page number, and define outgoing choices
+- Regenerates the graph view live as the draft changes
+- Highlights unfinished branches, shared endings, missing targets, and the selected page
+- Can export the draft as JSON or save it to a chosen file path with the browser file picker
 
 ## Current Canonical Outputs
 

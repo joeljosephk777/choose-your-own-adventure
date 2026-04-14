@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Cave of Time — Choose Your Own Adventure</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --bg: #fdf6e3;
@@ -18,7 +25,7 @@
       --choice-border: #c8a87a;
       --choice-hover: #e8d5b8;
       --crumb-bg: #ede4d0;
-      --shadow: rgba(0,0,0,0.12);
+      --shadow: rgba(0, 0, 0, 0.12);
       --terminal-bg: #f0ebe0;
     }
 
@@ -80,9 +87,13 @@
       text-underline-offset: 2px;
     }
 
-    #trail .crumb:hover { color: var(--accent-hover); }
+    #trail .crumb:hover {
+      color: var(--accent-hover);
+    }
 
-    #trail .sep { color: var(--muted); }
+    #trail .sep {
+      color: var(--muted);
+    }
 
     #trail .crumb.current {
       color: var(--text);
@@ -212,6 +223,44 @@
       margin-top: 60px;
     }
 
+    #start-menu {
+      max-width: 680px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .start-menu-card {
+      width: 100%;
+      background: var(--paper);
+      border-radius: 14px;
+      box-shadow: 0 4px 18px var(--shadow);
+      padding: 28px 24px;
+      border: 1px solid rgba(200, 168, 122, 0.35);
+    }
+
+    .start-menu-title {
+      font-size: 1.2rem;
+      color: var(--accent);
+      font-weight: bold;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .start-menu-copy {
+      font-size: 0.92rem;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .start-menu-buttons {
+      display: grid;
+      gap: 10px;
+    }
+
     #error-msg {
       color: #b91c1c;
       margin-top: 60px;
@@ -222,19 +271,30 @@
     #page-card {
       transition: opacity 0.2s ease;
     }
-    #page-card.fade-out { opacity: 0; }
+
+    #page-card.fade-out {
+      opacity: 0;
+    }
 
     @media (max-width: 520px) {
-      #page-card { padding: 24px 20px 24px; }
-      header h1 { font-size: 1.3rem; }
+      #page-card {
+        padding: 24px 20px 24px;
+      }
+
+      header h1 {
+        font-size: 1.3rem;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <header>
     <h1>The Cave of Time</h1>
-    <p class="subtitle">Choose Your Own Adventure &mdash; an interactive reader &nbsp;|&nbsp; <a href="#" id="link-graph" style="color:var(--accent);font-style:normal">View Story Graph</a></p>
+    <p class="subtitle">Choose Your Own Adventure &mdash; an interactive reader &nbsp;|&nbsp; <a href="#"
+        id="link-graph" style="color:var(--accent);font-style:normal">View Story Graph</a> &nbsp;|&nbsp; <a
+        href="author.html" style="color:var(--accent);font-style:normal">Author Tool</a></p>
   </header>
 
   <div id="trail-wrap">
@@ -243,6 +303,14 @@
 
   <div id="loading">Loading story&hellip;</div>
   <div id="error-msg" style="display:none"></div>
+
+  <div id="start-menu" style="display:none">
+    <div class="start-menu-card">
+      <div class="start-menu-title">Start at a beginning</div>
+      <div class="start-menu-copy">Choose one of the entry pages that has no arrows pointing into it.</div>
+      <div id="start-menu-buttons" class="start-menu-buttons"></div>
+    </div>
+  </div>
 
   <div id="page-card" style="display:none">
     <div id="page-number"></div>
@@ -263,8 +331,11 @@
   <script>
     let PAGES = {};
     let START_PAGE = 2;
+    let START_PAGES = [];
     let history = [];   // stack of page numbers visited
     let endings = new Set();   // page numbers reached that are terminals
+    const AUTHOR_DRAFT_KEY = 'cyoa_author_draft_v1';
+    const FIXED_START_ROOTS = [2, 22, 56, 90, 97, 100, 117, 119, 120, 200];
 
     // ── Load data ──────────────────────────────────────────────────────────
     fetch('pages.json')
@@ -273,14 +344,22 @@
         return r.json();
       })
       .then(data => {
-        PAGES = data.pages;
-        START_PAGE = data.meta.start_page;
+        const merged = applyAuthorDraftOverride(data);
+        PAGES = merged.pages;
+        START_PAGE = Number(merged.meta?.start_page) || 2;
+        START_PAGES = computeStartPages();
+        if (!PAGES[String(START_PAGE)] && START_PAGES.length) {
+          START_PAGE = START_PAGES[0];
+        }
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('page-card').style.display = 'block';
-        document.getElementById('controls').style.display = 'flex';
         // Support ?page=N URL param (e.g. from graph.html "Read from here")
         const urlPage = parseInt(new URLSearchParams(window.location.search).get('page'));
-        goTo(urlPage && PAGES[String(urlPage)] ? urlPage : START_PAGE, true);
+        if (urlPage && PAGES[String(urlPage)]) {
+          showStoryView();
+          goTo(urlPage, true);
+        } else {
+          showStartMenu();
+        }
       })
       .catch(err => {
         document.getElementById('loading').style.display = 'none';
@@ -289,6 +368,32 @@
         el.textContent = `Could not load pages.json: ${err.message}. Make sure you are serving this folder with a local web server.`;
       });
 
+    function applyAuthorDraftOverride(baseData) {
+      try {
+        const raw = localStorage.getItem(AUTHOR_DRAFT_KEY);
+        if (!raw) return baseData;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object' || typeof parsed.pages !== 'object') return baseData;
+
+        return {
+          ...baseData,
+          meta: {
+            ...(baseData.meta || {}),
+            ...(parsed.meta || {}),
+            start_page: Number(parsed.meta?.start_page || baseData.meta?.start_page || 2),
+          },
+          pages: parsed.pages,
+        };
+      } catch (_) {
+        return baseData;
+      }
+    }
+
+    function computeStartPages() {
+      const roots = FIXED_START_ROOTS.filter(pg => PAGES[String(pg)]);
+      return roots.length ? roots : [START_PAGE];
+    }
+
     // ── Navigation ─────────────────────────────────────────────────────────
     function goTo(pageNum, replace = false) {
       const page = PAGES[String(pageNum)];
@@ -296,6 +401,8 @@
         alert(`Page ${pageNum} not found in story data.`);
         return;
       }
+
+      showStoryView();
 
       const card = document.getElementById('page-card');
       card.classList.add('fade-out');
@@ -340,7 +447,33 @@
     }
 
     function restart() {
-      goTo(START_PAGE, true);
+      showStartMenu();
+    }
+
+    function showStoryView() {
+      document.getElementById('start-menu').style.display = 'none';
+      document.getElementById('page-card').style.display = 'block';
+      document.getElementById('controls').style.display = 'flex';
+    }
+
+    function showStartMenu() {
+      history = [];
+      endings = new Set();
+      document.getElementById('page-card').style.display = 'none';
+      document.getElementById('controls').style.display = 'none';
+      document.getElementById('trail').innerHTML = '';
+      document.getElementById('progress').textContent = '';
+      const menu = document.getElementById('start-menu');
+      const buttons = document.getElementById('start-menu-buttons');
+      buttons.innerHTML = '';
+      START_PAGES.forEach(pageNum => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerHTML = `<span class="arrow">&#9733;</span>Start at page ${pageNum}`;
+        btn.addEventListener('click', () => goTo(pageNum, true));
+        buttons.appendChild(btn);
+      });
+      menu.style.display = 'flex';
     }
 
     // ── Render ─────────────────────────────────────────────────────────────
@@ -361,6 +494,18 @@
           btn.addEventListener('click', () => goTo(choice.page));
           choicesEl.appendChild(btn);
         });
+      }
+
+      if (isBeginningState(page.page)) {
+        START_PAGES
+          .filter(pn => pn !== page.page)
+          .forEach(rootPage => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerHTML = `<span class="arrow">&#9733;</span>Begin from page ${rootPage}`;
+            btn.addEventListener('click', () => goTo(rootPage, true));
+            choicesEl.appendChild(btn);
+          });
       }
 
       const termEl = document.getElementById('terminal-msg');
@@ -420,9 +565,19 @@
       el.textContent = `Pages visited: ${visited} / ${total}  •  Endings found: ${endings.size}`;
     }
 
+    function isBeginningState(pageNum) {
+      return history.length === 1 && pageNum === START_PAGE && START_PAGES.length > 1;
+    }
+
+    document.getElementById('start-menu').addEventListener('click', e => {
+      if (e.target === document.getElementById('start-menu')) {
+        e.stopPropagation();
+      }
+    });
+
     // ── Sync progress to graph.html via localStorage ───────────────────────
     function syncProgress() {
-      try { localStorage.setItem('cyoa_reader_path', JSON.stringify(history)); } catch(_) {}
+      try { localStorage.setItem('cyoa_reader_path', JSON.stringify(history)); } catch (_) { }
     }
 
     // ── Wire up buttons ────────────────────────────────────────────────────
@@ -432,14 +587,15 @@
     // ── View Story Graph — carry current path ──────────────────────────────
     document.getElementById('link-graph').addEventListener('click', e => {
       e.preventDefault();
-      try { localStorage.setItem('cyoa_reader_path', JSON.stringify(history)); } catch(_) {}
+      try { localStorage.setItem('cyoa_reader_path', JSON.stringify(history)); } catch (_) { }
       window.open('graph.html', '_blank');
     });
 
     // ── Utility ────────────────────────────────────────────────────────────
     function escHtml(str) {
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
   </script>
 </body>
+
 </html>
