@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Story Graph — Cave of Time</title>
+  <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f8f7f4;
+      --panel: #ffffff;
+      --text: #1e1a14;
+      --muted: #6b6355;
+      --border: #ddd8ce;
+      --accent: #8b3a0f;
+      --trunk-bg: #dbeafe;   --trunk-bd: #1d4ed8;
+      --terminal-bg: #fee2e2; --terminal-bd: #b91c1c;
+      --regular-bg: #e2e8f0;  --regular-bd: #475569;
+      --chosen-bg: #d1fae5;   --chosen-bd: #059669;
+      --available-bg: #fef3c7; --available-bd: #d97706;
+      --declined-bg: #f1f5f9; --declined-bd: #cbd5e1;
+      --reader-bg: #ede9fe;   --reader-bd: #7c3aed;
+      --shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+      box-shadow: var(--shadow);
+      z-index: 10;
+    }
+
+    header h1 { font-size: 1rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+
+    .mode-tabs {
+      display: flex; gap: 3px;
+      background: var(--bg); border-radius: 8px; padding: 3px;
+      border: 1px solid var(--border);
+    }
+    .mode-tab {
+      padding: 5px 14px; border-radius: 6px; font-size: 0.83rem;
+      font-weight: 600; cursor: pointer; border: none;
+      background: transparent; color: var(--muted);
+      transition: background 0.15s, color 0.15s;
+    }
+    .mode-tab.active { background: var(--panel); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+
+    .header-spacer { flex: 1; }
+
+    .header-link {
+      font-size: 0.8rem; color: var(--muted); text-decoration: none;
+      padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .header-link:hover { background: var(--bg); color: var(--text); }
+
+    /* ── Main ── */
+    .main { display: flex; flex: 1; overflow: hidden; }
+
+    #cy-wrap { flex: 1; position: relative; background: #f0ede8; min-width: 0; }
+    #cy { width: 100%; height: 100%; }
+
+    .graph-controls {
+      position: absolute; bottom: 14px; left: 14px;
+      display: flex; gap: 6px;
+    }
+    .graph-btn {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+      padding: 5px 11px; font-size: 0.75rem; cursor: pointer; color: var(--muted);
+      transition: background 0.15s;
+    }
+    .graph-btn:hover { background: var(--bg); color: var(--text); }
+
+    /* ── Info panel ── */
+    #info-panel {
+      width: 290px; flex-shrink: 0;
+      background: var(--panel); border-left: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .info-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .info-header h2 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 3px; }
+    #info-page-num { font-size: 1.35rem; font-weight: 700; color: var(--accent); }
+
+    .info-body { flex: 1; overflow-y: auto; padding: 14px 16px; }
+    #info-text { font-family: Georgia, serif; font-size: 0.86rem; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+
+    .info-choices { margin-top: 14px; }
+    .info-choices h3 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 7px; }
+    .info-choice {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 7px 9px; margin-bottom: 5px;
+      background: var(--bg); border-radius: 6px; border: 1px solid var(--border);
+      font-size: 0.81rem; line-height: 1.4; cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .info-choice:hover { background: #ece8e0; border-color: var(--accent); }
+    .info-choice .pg-num { font-weight: 700; color: var(--accent); white-space: nowrap; font-size: 0.76rem; margin-top: 1px; }
+
+    .terminal-badge {
+      display: inline-block; background: var(--terminal-bg); color: var(--terminal-bd);
+      border: 1px solid var(--terminal-bd); border-radius: 4px;
+      font-size: 0.68rem; padding: 2px 6px; font-weight: 600; margin-bottom: 8px;
+    }
+
+    .info-footer { padding: 10px 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; }
+    .action-btn {
+      width: 100%; padding: 8px; border-radius: 7px; border: none;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    .action-btn.primary { background: var(--accent); color: #fff; }
+    .action-btn.primary:hover { background: #6b2a08; }
+    .action-btn.secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+    .action-btn.secondary:hover { background: #ece8e0; }
+    .action-btn:disabled { opacity: 0.35; cursor: default; }
+
+    /* ── Legend ── */
+    .legend {
+      position: absolute; top: 10px; left: 10px;
+      background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 13px; font-size: 0.73rem; color: var(--muted);
+      line-height: 1.9; backdrop-filter: blur(4px);
+    }
+    .legend-row { display: flex; align-items: center; gap: 7px; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; border: 1.5px solid transparent; }
+
+    /* ── Author hint ── */
+    #author-hint {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(254,243,199,0.95); border: 1px solid var(--available-bd);
+      border-radius: 8px; padding: 9px 13px; font-size: 0.76rem; color: #92400e;
+      max-width: 190px; line-height: 1.5;
+    }
+
+    /* ── Reader path banner ── */
+    #reader-banner {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(237,233,254,0.95); border: 1px solid var(--reader-bd);
+      border-radius: 8px; padding: 9px 13px; font-size: 0.76rem; color: #4c1d95;
+      max-width: 200px; line-height: 1.5; display: none;
+    }
+
+    /* ── Status ── */
+    #status {
+      position: absolute; bottom: 14px; right: 14px;
+      font-size: 0.7rem; color: var(--muted);
+      background: rgba(255,255,255,0.85); padding: 3px 9px;
+      border-radius: 6px; border: 1px solid var(--border);
+    }
+
+    #info-empty { padding: 20px 14px; color: var(--muted); font-size: 0.83rem; text-align: center; line-height: 1.6; }
+
+    @media (max-width: 640px) { #info-panel { width: 230px; } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Cave of Time — Story Graph</h1>
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tab-author">Author View</button>
+      <button class="mode-tab" id="tab-full">Full Graph</button>
+    </div>
+    <div class="header-spacer"></div>
+    <a href="index.html" class="header-link">← Reader</a>
+  </header>
+
+  <div class="main">
+    <div id="cy-wrap">
+      <div id="cy"></div>
+
+      <!-- Full graph legend -->
+      <div class="legend" id="legend-full" style="display:none">
+        <div class="legend-row"><div class="legend-dot" style="background:var(--trunk-bg);border-color:var(--trunk-bd)"></div> Main trunk</div>
+        <div class="legend-row"><div class="legend-dot" style="background:var(--terminal-bg);border-color:var(--terminal-bd)"></div> Story ending</div>
+        <div class="legend-row"><div class="legend-dot" style="background:var(--regular-bg);border-color:var(--regular-bd)"></div> Story page</div>
+        <div class="legend-row"><div class="legend-dot" style="background:var(--reader-bg);border-color:var(--reader-bd)"></div> Your reading path</div>
+      </div>
+
+      <!-- Author legend -->
+      <div class="legend" id="legend-author">
+        <div class="legend-row"><div class="legend-dot" style="background:var(--chosen-bg);border-color:var(--chosen-bd)"></div> Chosen path</div>
+        <div class="legend-row"><div class="legend-dot" style="background:var(--available-bg);border-color:var(--available-bd)"></div> Choose next</div>
+        <div class="legend-row"><div class="legend-dot" style="background:var(--declined-bg);border-color:var(--declined-bd)"></div> Alternate branch</div>
+        <div class="legend-row"><div class="legend-dot" style="background:var(--terminal-bg);border-color:var(--terminal-bd)"></div> Story ending</div>
+      </div>
+
+      <div id="author-hint">Click <strong>page 2</strong> to begin.<br>Pick one path at each branch.</div>
+      <div id="reader-banner"></div>
+
+      <div class="graph-controls">
+        <button class="graph-btn" id="btn-fit">Fit</button>
+        <button class="graph-btn" id="btn-zoom-in">＋</button>
+        <button class="graph-btn" id="btn-zoom-out">－</button>
+        <button class="graph-btn" id="btn-reset-author">↺ Reset</button>
+      </div>
+      <div id="status">Loading…</div>
+    </div>
+
+    <div id="info-panel">
+      <div class="info-header">
+        <h2>Selected Page</h2>
+        <div id="info-page-num">—</div>
+      </div>
+      <div class="info-body">
+        <div id="info-empty">Click any node to see its text and choices.</div>
+        <div id="info-content" style="display:none">
+          <div id="info-terminal-badge" class="terminal-badge" style="display:none">Story Ending</div>
+          <div id="info-text"></div>
+          <div class="info-choices" id="info-choices-wrap" style="display:none">
+            <h3>Choices from this page</h3>
+            <div id="info-choices"></div>
+          </div>
+        </div>
+      </div>
+      <div class="info-footer">
+        <button class="action-btn primary" id="btn-read-here" disabled>Read from this page →</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let pages = {};
+  let cy = null;
+  let currentMode = 'author';
+  let selectedPage = null;
+  let mainTrunk = new Set();
+  let mainTrunkEdges = new Set();
+
+  // Author mode state
+  let authorChosen    = new Set();   // on the chosen path (green)
+  let authorAvailable = new Set();   // next choices to pick from (amber)
+  let authorDeclined  = new Set();   // alternate branches not chosen (gray)
+  let authorParentOf  = {};          // child pageNum → parent pageNum
+
+  // Reader path (from localStorage, set by index.html)
+  let readerPath = [];
+
+  // ── Bootstrap ─────────────────────────────────────────────────────────────
+  try {
+    const stored = localStorage.getItem('cyoa_reader_path');
+    if (stored) readerPath = JSON.parse(stored) || [];
+  } catch(_) {}
+
+  fetch('pages.json')
+    .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+    .then(data => {
+      pages = data.pages;
+      computeMainTrunk(data.meta.start_page);
+      initCytoscape();
+      document.getElementById('status').textContent =
+        `${Object.keys(pages).length} pages · ${countEdges()} connections`;
+    })
+    .catch(err => { document.getElementById('status').textContent = 'Error: ' + err.message; });
+
+  function countEdges() {
+    return Object.values(pages).reduce((n, p) => n + p.choices.length, 0);
+  }
+
+  // ── Main trunk ─────────────────────────────────────────────────────────────
+  function computeMainTrunk(start) {
+    let cur = String(start);
+    const visited = new Set();
+    while (cur && !visited.has(cur)) {
+      mainTrunk.add(cur);
+      visited.add(cur);
+      const p = pages[cur];
+      if (!p || !p.choices.length) break;
+      const nxt = String(p.choices[0].page);
+      mainTrunkEdges.add(`${cur}-${nxt}`);
+      cur = nxt;
+    }
+  }
+
+  // ── Cytoscape init ─────────────────────────────────────────────────────────
+  function initCytoscape() {
+    const els = [];
+    for (const [pn, page] of Object.entries(pages)) {
+      els.push({ group: 'nodes', data: { id: `p${pn}`, label: pn, pageNum: pn }, classes: fullNodeClass(pn) });
+    }
+    for (const [pn, page] of Object.entries(pages)) {
+      for (const c of page.choices) {
+        els.push({ group: 'edges', data: { id: `e${pn}-${c.page}`, source: `p${pn}`, target: `p${c.page}`, trunk: mainTrunkEdges.has(`${pn}-${c.page}`) } });
+      }
+    }
+
+    cy = cytoscape({
+      container: document.getElementById('cy'),
+      elements: els,
+      style: buildStyle(),
+      layout: { name: 'breadthfirst', roots: ['p2'], directed: true, spacingFactor: 1.3, padding: 40 },
+      wheelSensitivity: 0.3, minZoom: 0.05, maxZoom: 3,
+    });
+
+    cy.on('tap', 'node', e => onNodeTap(e.target));
+    cy.on('tap', e => { if (e.target === cy) clearSelection(); });
+
+    // Default to author mode
+    setMode('author');
+  }
+
+  function fullNodeClass(pn) {
+    if (mainTrunk.has(String(pn))) return 'trunk';
+    if (pages[String(pn)]?.is_terminal) return 'terminal';
+    return 'regular';
+  }
+
+  // ── Styles ─────────────────────────────────────────────────────────────────
+  function buildStyle() {
+    return [
+      { selector: 'node', style: {
+          label: 'data(label)', 'text-valign': 'center', 'text-halign': 'center',
+          'font-size': '11px', 'font-family': 'Helvetica, Arial, sans-serif', 'font-weight': '600',
+          color: '#0f172a', width: 44, height: 28, shape: 'roundrectangle',
+          'border-width': 1.5, 'transition-property': 'background-color, border-color, border-width, opacity',
+          'transition-duration': '0.2s',
+      }},
+      { selector: 'node.trunk',     style: { 'background-color': 'var(--trunk-bg)',     'border-color': 'var(--trunk-bd)',    'border-width': 2   }},
+      { selector: 'node.terminal',  style: { 'background-color': 'var(--terminal-bg)',  'border-color': 'var(--terminal-bd)'                     }},
+      { selector: 'node.regular',   style: { 'background-color': 'var(--regular-bg)',   'border-color': 'var(--regular-bd)'                      }},
+      // Author mode
+      { selector: 'node.author-chosen',    style: { 'background-color': 'var(--chosen-bg)',    'border-color': 'var(--chosen-bd)',    'border-width': 2   }},
+      { selector: 'node.author-available', style: { 'background-color': 'var(--available-bg)', 'border-color': 'var(--available-bd)', 'border-width': 1.5 }},
+      { selector: 'node.author-declined',  style: { 'background-color': 'var(--declined-bg)',  'border-color': 'var(--declined-bd)',  opacity: 0.6        }},
+      // Reader path highlight
+      { selector: 'node.reader-path', style: { 'background-color': 'var(--reader-bg)', 'border-color': 'var(--reader-bd)', 'border-width': 2.5 }},
+      // Active / hidden
+      { selector: 'node.active',  style: { 'border-width': 3, 'border-color': '#b45309' }},
+      { selector: 'node.hidden',  style: { display: 'none' }},
+      // Edges
+      { selector: 'edge', style: {
+          width: 1.5, 'line-color': '#94a3b8', 'target-arrow-color': '#94a3b8',
+          'target-arrow-shape': 'triangle', 'curve-style': 'bezier', opacity: 0.7,
+          'transition-property': 'opacity, line-color, width', 'transition-duration': '0.2s',
+      }},
+      { selector: 'edge[?trunk]',         style: { 'line-color': '#2563eb', 'target-arrow-color': '#2563eb', width: 2.5, opacity: 0.9 }},
+      { selector: 'edge.reader-path-edge',style: { 'line-color': 'var(--reader-bd)', 'target-arrow-color': 'var(--reader-bd)', width: 2.5, opacity: 0.9 }},
+      { selector: 'edge.author-visible',  style: { 'line-color': '#6ee7b7', 'target-arrow-color': '#6ee7b7', width: 2, opacity: 0.9 }},
+      { selector: 'edge.hidden',          style: { display: 'none' }},
+    ];
+  }
+
+  // ── Mode switching ─────────────────────────────────────────────────────────
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('tab-author').classList.toggle('active', mode === 'author');
+    document.getElementById('tab-full').classList.toggle('active', mode === 'full');
+    document.getElementById('legend-author').style.display = mode === 'author' ? '' : 'none';
+    document.getElementById('legend-full').style.display   = mode === 'full'   ? '' : 'none';
+    document.getElementById('author-hint').style.display   = mode === 'author' ? '' : 'none';
+    document.getElementById('btn-reset-author').style.display = mode === 'author' ? '' : 'none';
+
+    clearSelection();
+
+    if (mode === 'author') {
+      initAuthorMode();
+    } else {
+      initFullMode();
+    }
+  }
+
+  // ── Full graph mode ────────────────────────────────────────────────────────
+  function initFullMode() {
+    cy.nodes().removeClass('hidden active author-chosen author-available author-declined reader-path');
+    cy.edges().removeClass('hidden author-visible reader-path-edge');
+
+    // Re-apply type classes
+    cy.nodes().forEach(n => {
+      n.removeClass('trunk terminal regular');
+      n.addClass(fullNodeClass(n.data('pageNum')));
+    });
+
+    cy.layout({ name: 'breadthfirst', roots: ['p2'], directed: true, spacingFactor: 1.3, padding: 40 }).run();
+
+    // Apply reader path highlight after layout settles
+    setTimeout(() => {
+      updateReaderPathHighlight();
+      if (readerPath.length) {
+        const last = cy.getElementById(`p${readerPath[readerPath.length - 1]}`);
+        if (last.length) {
+          cy.animate({ fit: { eles: last, padding: 120 } }, { duration: 600 });
+          showInfo(String(readerPath[readerPath.length - 1]));
+        }
+      }
+    }, 350);
+  }
+
+  // ── Author mode ────────────────────────────────────────────────────────────
+  function initAuthorMode() {
+    authorChosen    = new Set();
+    authorAvailable = new Set(['2']);
+    authorDeclined  = new Set();
+    authorParentOf  = {};
+
+    cy.nodes().addClass('hidden')
+      .removeClass('trunk terminal regular author-chosen author-available author-declined active reader-path');
+    cy.edges().addClass('hidden').removeClass('author-visible reader-path-edge');
+
+    cy.getElementById('p2').removeClass('hidden').addClass('author-available');
+    document.getElementById('author-hint').style.display = '';
+    document.getElementById('reader-banner').style.display = 'none';
+  }
+
+  function authorSelectNode(pageNum) {
+    const pStr = String(pageNum);
+
+    // Only available nodes can be selected
+    if (!authorAvailable.has(pStr)) return;
+
+    document.getElementById('author-hint').style.display = 'none';
+
+    // Lock siblings — other available children of the same parent
+    const parentStr = authorParentOf[pStr];
+    if (parentStr) {
+      const parentPage = pages[parentStr];
+      if (parentPage) {
+        parentPage.choices.forEach(c => {
+          const sibStr = String(c.page);
+          if (sibStr !== pStr && authorAvailable.has(sibStr)) {
+            authorAvailable.delete(sibStr);
+            authorDeclined.add(sibStr);
+            cy.getElementById(`p${sibStr}`)
+              .removeClass('author-available')
+              .addClass('author-declined');
+          }
+        });
+      }
+    }
+
+    // Move this node from available → chosen
+    authorAvailable.delete(pStr);
+    authorChosen.add(pStr);
+    const node = cy.getElementById(`p${pageNum}`);
+    node.removeClass('author-available active').addClass('author-chosen');
+
+    // Reveal children as available
+    const page = pages[pStr];
+    if (page && page.choices.length > 0) {
+      page.choices.forEach(c => {
+        const cStr = String(c.page);
+        if (!authorChosen.has(cStr) && !authorDeclined.has(cStr)) {
+          authorAvailable.add(cStr);
+          authorParentOf[cStr] = pStr;
+          cy.getElementById(`p${cStr}`).removeClass('hidden author-declined').addClass('author-available');
+          cy.getElementById(`e${pStr}-${cStr}`).removeClass('hidden').addClass('author-visible');
+        }
+      });
+    }
+
+    // Re-layout visible nodes
+    cy.layout({
+      name: 'breadthfirst',
+      roots: cy.getElementById('p2'),
+      directed: true, spacingFactor: 1.5, padding: 40, fit: false,
+    }).run();
+  }
+
+  // ── Node tap ───────────────────────────────────────────────────────────────
+  function onNodeTap(node) {
+    const pageNum = node.data('pageNum');
+    selectedPage = pageNum;
+
+    cy.nodes().removeClass('active');
+    node.addClass('active');
+    showInfo(pageNum);
+
+    if (currentMode === 'author') authorSelectNode(pageNum);
+  }
+
+  function clearSelection() {
+    selectedPage = null;
+    cy.nodes().removeClass('active');
+    document.getElementById('info-empty').style.display = 'block';
+    document.getElementById('info-content').style.display = 'none';
+    document.getElementById('info-page-num').textContent = '—';
+    document.getElementById('btn-read-here').disabled = true;
+  }
+
+  // ── Info panel ─────────────────────────────────────────────────────────────
+  function showInfo(pageNum) {
+    const page = pages[String(pageNum)];
+    if (!page) return;
+
+    document.getElementById('info-empty').style.display = 'none';
+    document.getElementById('info-content').style.display = 'block';
+    document.getElementById('info-page-num').textContent = `Page ${pageNum}`;
+    document.getElementById('info-terminal-badge').style.display = page.is_terminal ? 'inline-block' : 'none';
+
+    const preview = page.text.length > 320 ? page.text.slice(0, 320) + '…' : page.text;
+    document.getElementById('info-text').textContent = preview;
+
+    const choicesWrap = document.getElementById('info-choices-wrap');
+    const choicesEl   = document.getElementById('info-choices');
+    choicesEl.innerHTML = '';
+
+    if (page.choices.length > 0) {
+      choicesWrap.style.display = 'block';
+      page.choices.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'info-choice';
+        div.innerHTML = `<span class="pg-num">→ ${c.page}</span><span>${esc(c.label)}</span>`;
+        div.addEventListener('click', () => {
+          const t = cy.getElementById(`p${c.page}`);
+          if (t.length && !t.hasClass('hidden')) {
+            cy.animate({ fit: { eles: t, padding: 80 } }, { duration: 350 });
+            onNodeTap(t);
+          }
+        });
+        choicesEl.appendChild(div);
+      });
+    } else {
+      choicesWrap.style.display = 'none';
+    }
+
+    document.getElementById('btn-read-here').disabled = false;
+  }
+
+  // ── Buttons ────────────────────────────────────────────────────────────────
+  document.getElementById('btn-read-here').addEventListener('click', () => {
+    if (selectedPage) window.open(`index.html?page=${selectedPage}`, '_blank');
+  });
+
+  document.getElementById('btn-reset-author').addEventListener('click', () => {
+    initAuthorMode();
+    clearSelection();
+  });
+
+  document.getElementById('btn-fit').addEventListener('click', () => {
+    const visible = cy.nodes(':not(.hidden)');
+    cy.fit(visible.length ? visible : cy.nodes(), 40);
+  });
+  document.getElementById('btn-zoom-in').addEventListener('click',  () => cy.zoom(cy.zoom() * 1.25));
+  document.getElementById('btn-zoom-out').addEventListener('click', () => cy.zoom(cy.zoom() * 0.8));
+
+  document.getElementById('tab-author').addEventListener('click', () => setMode('author'));
+  document.getElementById('tab-full').addEventListener('click',   () => setMode('full'));
+
+  // ── Live sync from reader ──────────────────────────────────────────────────
+  // index.html writes cyoa_reader_path to localStorage on every navigation.
+  // The storage event fires in THIS tab when another tab changes it.
+  window.addEventListener('storage', e => {
+    if (e.key !== 'cyoa_reader_path') return;
+    try {
+      const newPath = JSON.parse(e.newValue || 'null') || [];
+      readerPath = newPath;
+      if (currentMode === 'full') {
+        updateReaderPathHighlight();
+      } else {
+        // Show a subtle pulsing indicator on the current page node in author mode
+        highlightCurrentInAuthor();
+      }
+    } catch(_) {}
+  });
+
+  // Apply (or refresh) reader path highlighting on the full graph.
+  function updateReaderPathHighlight() {
+    // Clear old highlights
+    cy.nodes().removeClass('reader-path');
+    cy.edges().removeClass('reader-path-edge');
+
+    if (!readerPath.length) {
+      document.getElementById('reader-banner').style.display = 'none';
+      return;
+    }
+
+    readerPath.forEach((pg, i) => {
+      cy.getElementById(`p${pg}`).addClass('reader-path');
+      if (i < readerPath.length - 1) {
+        cy.getElementById(`e${pg}-${readerPath[i + 1]}`).addClass('reader-path-edge');
+      }
+    });
+
+    // Update banner
+    const banner = document.getElementById('reader-banner');
+    const cur = readerPath[readerPath.length - 1];
+    banner.style.display = '';
+    banner.innerHTML = `📖 Reading: <strong>Page ${cur}</strong><br><span style="font-size:0.7rem;opacity:0.8">${readerPath.join(' → ')}</span>`;
+
+    // Pan to current page without resetting zoom
+    const curNode = cy.getElementById(`p${cur}`);
+    if (curNode.length) {
+      cy.animate({ center: { eles: curNode } }, { duration: 300 });
+    }
+  }
+
+  // In author mode, pulse the current reader page if it's visible.
+  function highlightCurrentInAuthor() {
+    if (!readerPath.length) return;
+    const cur = String(readerPath[readerPath.length - 1]);
+    const node = cy.getElementById(`p${cur}`);
+    if (!node.length || node.hasClass('hidden')) return;
+    // Brief flash: add active, remove after 800ms
+    node.addClass('active');
+    setTimeout(() => node.removeClass('active'), 800);
+  }
+
+  // ── Util ──────────────────────────────────────────────────────────────────
+  function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  </script>
+</body>
+</html>
