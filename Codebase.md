@@ -37,6 +37,9 @@ Web app entry points in web/:
 - graph.html
 - author.html
 
+Backend entry point:
+- app.py
+
 Superseded scripts were deleted:
 - extract_cot.py
 - reextract_cot_spreads.py
@@ -123,6 +126,17 @@ Current behavior:
 - Regenerates the graph view live as the draft changes
 - Highlights unfinished branches, shared endings, missing targets, and the selected page
 - Can export the draft as JSON or save it to a chosen file path with the browser file picker
+
+### app.py
+
+Flask backend for the static app and page data API.
+
+Current behavior:
+- Serves the reader, graph, and author pages from web/
+- Exposes page CRUD at /pages and /pages/<n>
+- Exposes graph JSON at /graph
+- Rebuilds output/cot-story-graph.mmd at /graph/rebuild
+- Keeps story_beginnings.txt synchronized from pages marked as beginnings
 
 ## Current Canonical Outputs
 

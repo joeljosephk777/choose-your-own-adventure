@@ -37,20 +37,18 @@
 - [x] Adding a new page should appropriately sync across the different views. 
 - [ ] Read only viewer to read the entire story created by author
 - [ ] Visualize the shared endings, endings, unfinished endings using a filter feature. 
-- [ ] Once a user selects the next page in the author view, the other options for that decision level are no longer visible
-
-
+- [x] Once a user selects the next page in the author view, the other options for that decision level are no longer visible
 
 
 ## Phase 4: Web Server / Backend
-- [ ] Set up a simple backend (Python Flask or similar) to serve pages data as JSON
-- [ ] API endpoint: GET `/pages` — list all page numbers
-- [ ] API endpoint: GET `/pages/<n>` — return text and choices for page n
-- [ ] API endpoint: POST `/pages` — upload a new story segment
-- [ ] API endpoint: PUT `/pages/<n>` — edit an existing segment
-- [ ] API endpoint: DELETE `/pages/<n>` — remove a segment
-- [ ] API endpoint: GET `/graph` — return graph data (nodes + edges)
-- [ ] API endpoint: POST `/graph/rebuild` — rebuild graph from current pages
+- [x] Set up a simple backend (Python Flask or similar) to serve pages data as JSON
+- [x] API endpoint: GET `/pages` — list all page numbers
+- [x] API endpoint: GET `/pages/<n>` — return text and choices for page n
+- [x] API endpoint: POST `/pages` — upload a new story segment
+- [x] API endpoint: PUT `/pages/<n>` — edit an existing segment
+- [x] API endpoint: DELETE `/pages/<n>` — remove a segment
+- [x] API endpoint: GET `/graph` — return graph data (nodes + edges)
+- [x] API endpoint: POST `/graph/rebuild` — rebuild graph from current pages
 
 ## Phase 5: Project Hygiene
 - [x] Update session-logs/AI-session-logs.json after each work session

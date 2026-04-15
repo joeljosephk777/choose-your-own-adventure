@@ -1,9 +1,0 @@
-Timestamp: 2026-04-14
-Instruction (verbatim): "In the live authoring map, remove the text that accompanies the directional arrows to the next page."
-Actions taken:
-1. Updated web/author.html graphStyle function:
-   - Removed label: 'data(label)' line from edge styling
-   - Removed all text-related properties: font-size, color, text-background-color, text-background-opacity, text-background-padding, text-rotation
-   - Edge styling now only contains: width, line-color, target-arrow-color, target-arrow-shape, curve-style, opacity, transition properties
-Files changed: web/author.html
-Validation: No errors found in diagnostics.
