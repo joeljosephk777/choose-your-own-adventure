@@ -1,0 +1,18 @@
+Timestamp: 2026-04-14
+Instruction (verbatim): "In the Author tool add a checkbox titled Mark as story beginning. When selected, the specific page number will be added to a .txt file of story beginnings. The pages in the story_beginnings.txt will be displayed in the initial state of the interactive reader. this should be above the checkbox titled: Mark as terminal ending."
+Actions taken:
+1. Updated web/author.html:
+   - Added is_story_beginning field to normalizePage and page structure
+   - Added "Mark as story beginning" checkbox above "Mark as terminal ending" checkbox
+   - Updated loadEditor to handle is_story_beginning state
+   - Updated savePage to read and save is_story_beginning state
+   - Added downloadBeginnings function to export marked pages to story_beginnings.txt
+   - Added "Download story_beginnings.txt" button
+   - Wired button click listener to downloadBeginnings function
+2. Updated web/index.html:
+   - Modified page load sequence to fetch story_beginnings.txt after pages.json
+   - If story_beginnings.txt exists, parse it and use those pages as START_PAGES
+   - Falls back to computeStartPages (zero-incoming logic) if file doesn't exist
+   - Updated start menu copy to reference the loaded beginnings
+Files changed: web/author.html, web/index.html
+Validation: No errors found in diagnostics.

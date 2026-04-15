@@ -448,6 +448,56 @@
           "response": {
             "summary": "Updated web/index.html to compute beginning pages dynamically from pages with zero incoming links (using merged author-draft data), removing the fixed root list so newly authored starter pages automatically appear in the reader start menu."
           }
+        },
+        {
+          "requestId": "request_009",
+          "timestamp": "2026-04-14",
+          "message": {
+            "text": "Terminal endings should not be visible in the initial state for the interactive reader. The only pages that you should be able to select are starting/beginning pages that have no \"arrows\" pointing into it."
+          },
+          "response": {
+            "summary": "Updated web/index.html beginning-page detection to exclude terminal endings from the initial reader start menu, while still requiring zero incoming links."
+          }
+        },
+        {
+          "requestId": "request_010",
+          "timestamp": "2026-04-14",
+          "message": {
+            "text": "In the Author tool add a checkbox titled Mark as story beginning. When selected, the specific page number will be added to a .txt file of story beginnings. The pages in the story_beginnings.txt will be displayed in the initial state of the interactive reader. this should be above the checkbox titled: Mark as terminal ending."
+          },
+          "response": {
+            "summary": "Added 'Mark as story beginning' checkbox to author tool (above terminal ending checkbox), with downloadBeginnings function to export marked pages as story_beginnings.txt. Updated reader index.html to load and use story_beginnings.txt if available, falling back to zero-incoming-link logic if the file doesn't exist."
+          }
+        },
+        {
+          "requestId": "request_011",
+          "timestamp": "2026-04-14",
+          "message": {
+            "text": "The 'start at the beginnings page' part of the interactive reader should only have pages that are story_beginnings.txt file. I see that file has not been created yet. A story is a story_beginning if the 'mark story as beginning' checkbox has been selected."
+          },
+          "response": {
+            "summary": "Removed fallback to computeStartPages() from reader. Now ONLY uses story_beginnings.txt — if file is missing or empty, START_PAGES is set to empty and shows a message prompting user to mark pages as beginnings in author tool. Updated start-menu copy and removed unused computeStartPages function."
+          }
+        },
+        {
+          "requestId": "request_012",
+          "timestamp": "2026-04-14",
+          "message": {
+            "text": "In the live authoring map, remove the text that accompanies the directional arrows to the next page."
+          },
+          "response": {
+            "summary": "Removed edge label styling from the author tool's graph visualization. Removed label: 'data(label)' and all related text properties (font-size, color, text-background-*) from edge CSS styling in graphStyle function."
+          }
+        },
+        {
+          "requestId": "request_013",
+          "timestamp": "2026-04-14",
+          "message": {
+            "text": "Expected Behavior when 'Mark as story beginning' is selected: The specific story page is added to the story_beginnings.txt file. Then The interactive reader should initially show all story pages marked as story beginnings."
+          },
+          "response": {
+            "summary": "Updated reader to source story beginnings from both story_beginnings.txt file AND pages marked as is_story_beginning in author draft. Combines and deduplicates both sources. If file is missing, falls back to author draft marked pages. Marked pages now appear immediately in reader start menu without requiring manual file export."
+          }
         }
       ]
     }

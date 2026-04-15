@@ -723,6 +723,7 @@
                             <button class="btn danger" id="btn-delete-page">Delete page</button>
                         </div>
                         <div class="controls-row" style="margin-top:8px">
+                            <button class="btn" id="btn-download-beginnings">Download story_beginnings.txt</button>
                             <button class="btn" id="btn-reset-draft">Reset draft</button>
                         </div>
                         <div class="split-note" style="margin-top:8px">
@@ -753,6 +754,10 @@
                         <div class="field-group">
                             <label for="page-text">Story text</label>
                             <textarea id="page-text" placeholder="Paste or type the page text here"></textarea>
+                        </div>
+                        <div class="check-row">
+                            <input id="page-beginning" type="checkbox" />
+                            <label for="page-beginning">Mark as story beginning</label>
                         </div>
                         <div class="check-row">
                             <input id="page-terminal" type="checkbox" />
@@ -821,11 +826,13 @@
             const pageNum = Number(num);
             const choices = Array.isArray(page?.choices) ? page.choices.map(normalizeChoice).filter(c => Number.isFinite(c.page)) : [];
             const terminal = typeof page?.is_terminal === 'boolean' ? page.is_terminal : choices.length === 0;
+            const beginning = typeof page?.is_story_beginning === 'boolean' ? page.is_story_beginning : false;
             return {
                 page: pageNum,
                 text: String(page?.text || '').trim(),
                 choices,
                 is_terminal: terminal,
+                is_story_beginning: beginning,
             };
         }
 
@@ -1035,9 +1042,10 @@
         }
 
         function loadEditor(pageNum) {
-            const page = draft[String(pageNum)] || normalizePage(pageNum, { page: Number(pageNum), text: '', choices: [], is_terminal: false });
+            const page = draft[String(pageNum)] || normalizePage(pageNum, { page: Number(pageNum), text: '', choices: [], is_terminal: false, is_story_beginning: false });
             el('page-number').value = page.page;
             el('page-text').value = page.text || '';
+            el('page-beginning').checked = Boolean(page.is_story_beginning);
             el('page-terminal').checked = Boolean(page.is_terminal);
             renderChoiceEditor(page.choices || []);
             el('editor-title').textContent = `Page ${page.page}`;
@@ -1109,6 +1117,7 @@
             }
             const text = el('page-text').value.trim();
             const choices = readChoiceEditor().map(normalizeChoice);
+            const isBeginning = Boolean(el('page-beginning').checked);
             const isTerminal = Boolean(el('page-terminal').checked);
             const oldKey = originalSelectionPage && String(originalSelectionPage);
             const newKey = String(pageNum);
@@ -1121,7 +1130,7 @@
                 delete draft[oldKey];
             }
 
-            draft[newKey] = normalizePage(pageNum, { page: pageNum, text, choices, is_terminal: isTerminal });
+            draft[newKey] = normalizePage(pageNum, { page: pageNum, text, choices, is_terminal: isTerminal, is_story_beginning: isBeginning });
             selectedPage = newKey;
             originalSelectionPage = newKey;
             persistDraft();
@@ -1193,6 +1202,21 @@
             const a = document.createElement('a');
             a.href = url;
             a.download = 'pages.json';
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 500);
+        }
+
+        function downloadBeginnings() {
+            const beginningPages = Object.values(draft)
+                .filter(page => page.is_story_beginning)
+                .map(page => page.page)
+                .sort((a, b) => a - b);
+            const content = beginningPages.join('\n');
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'story_beginnings.txt';
             a.click();
             setTimeout(() => URL.revokeObjectURL(url), 500);
         }
@@ -1320,13 +1344,6 @@
                         'target-arrow-shape': 'triangle',
                         'curve-style': 'bezier',
                         opacity: 0.72,
-                        label: 'data(label)',
-                        'font-size': '8px',
-                        color: '#64748b',
-                        'text-background-color': '#fff',
-                        'text-background-opacity': 0.92,
-                        'text-background-padding': 2,
-                        'text-rotation': 'autorotate',
                         'transition-property': 'opacity, line-color, width',
                         'transition-duration': '0.18s',
                     }
@@ -1522,6 +1539,7 @@
         });
         el('btn-save-file').addEventListener('click', saveToFile);
         el('btn-download-json').addEventListener('click', downloadJson);
+        el('btn-download-beginnings').addEventListener('click', downloadBeginnings);
         el('btn-reset-draft').addEventListener('click', resetDraft);
         el('btn-load-file').addEventListener('click', loadSegmentFile);
         el('btn-add-choice').addEventListener('click', () => addChoiceRow());

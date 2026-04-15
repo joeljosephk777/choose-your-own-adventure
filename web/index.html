@@ -307,7 +307,7 @@
   <div id="start-menu" style="display:none">
     <div class="start-menu-card">
       <div class="start-menu-title">Start at a beginning</div>
-      <div class="start-menu-copy">Choose one of the entry pages that has no arrows pointing into it.</div>
+      <div class="start-menu-copy">Choose one of the marked story beginnings.</div>
       <div id="start-menu-buttons" class="start-menu-buttons"></div>
     </div>
   </div>
@@ -346,19 +346,49 @@
         const merged = applyAuthorDraftOverride(data);
         PAGES = merged.pages;
         START_PAGE = Number(merged.meta?.start_page) || 2;
-        START_PAGES = computeStartPages();
-        if (!PAGES[String(START_PAGE)] && START_PAGES.length) {
-          START_PAGE = START_PAGES[0];
-        }
-        document.getElementById('loading').style.display = 'none';
-        // Support ?page=N URL param (e.g. from graph.html "Read from here")
-        const urlPage = parseInt(new URLSearchParams(window.location.search).get('page'));
-        if (urlPage && PAGES[String(urlPage)]) {
-          showStoryView();
-          goTo(urlPage, true);
-        } else {
-          showStartMenu();
-        }
+
+        // Load story_beginnings.txt
+        return fetch('story_beginnings.txt')
+          .then(r => {
+            if (!r.ok) throw new Error('not found');
+            return r.text();
+          })
+          .then(text => {
+            const lines = text.trim().split(/\r?\n/).filter(line => line.trim());
+            const pagesFromFile = lines.map(line => Number(line.trim())).filter(Number.isFinite);
+
+            // Also include pages marked as story_beginning in author draft
+            const pagesFromDraft = Object.values(merged.pages)
+              .filter(page => page.is_story_beginning)
+              .map(page => page.page);
+
+            // Combine and deduplicate
+            const allBeginnings = [...new Set([...pagesFromFile, ...pagesFromDraft])].sort((a, b) => a - b);
+            START_PAGES = allBeginnings;
+
+            if (!PAGES[String(START_PAGE)] && START_PAGES.length) {
+              START_PAGE = START_PAGES[0];
+            }
+          })
+          .catch(() => {
+            // If file fails, check author draft for marked beginnings
+            const pagesFromDraft = Object.values(merged.pages)
+              .filter(page => page.is_story_beginning)
+              .map(page => page.page)
+              .sort((a, b) => a - b);
+            START_PAGES = pagesFromDraft;
+          })
+          .then(() => {
+            document.getElementById('loading').style.display = 'none';
+            // Support ?page=N URL param (e.g. from graph.html "Read from here")
+            const urlPage = parseInt(new URLSearchParams(window.location.search).get('page'));
+            if (urlPage && PAGES[String(urlPage)]) {
+              showStoryView();
+              goTo(urlPage, true);
+            } else {
+              showStartMenu();
+            }
+          });
       })
       .catch(err => {
         document.getElementById('loading').style.display = 'none';
@@ -386,26 +416,6 @@
       } catch (_) {
         return baseData;
       }
-    }
-
-    function computeStartPages() {
-      const incoming = {};
-      Object.keys(PAGES).forEach(pn => { incoming[pn] = 0; });
-
-      Object.values(PAGES).forEach(page => {
-        (page.choices || []).forEach(choice => {
-          const dst = String(choice.page);
-          incoming[dst] = (incoming[dst] || 0) + 1;
-        });
-      });
-
-      const roots = Object.keys(PAGES)
-        .filter(pn => (incoming[pn] || 0) === 0)
-        .map(Number)
-        .filter(Number.isFinite)
-        .sort((a, b) => a - b);
-
-      return roots.length ? roots : [START_PAGE];
     }
 
     // ── Navigation ─────────────────────────────────────────────────────────
@@ -480,13 +490,21 @@
       const menu = document.getElementById('start-menu');
       const buttons = document.getElementById('start-menu-buttons');
       buttons.innerHTML = '';
-      START_PAGES.forEach(pageNum => {
-        const btn = document.createElement('button');
-        btn.className = 'choice-btn';
-        btn.innerHTML = `<span class="arrow">&#9733;</span>Start at page ${pageNum}`;
-        btn.addEventListener('click', () => goTo(pageNum, true));
-        buttons.appendChild(btn);
-      });
+
+      if (START_PAGES.length === 0) {
+        const msg = document.createElement('div');
+        msg.style.cssText = 'color: var(--muted); font-size: 0.95rem; text-align: center; padding: 20px;';
+        msg.textContent = 'No story beginnings have been marked yet. Use the Author tool to mark pages as story beginnings.';
+        buttons.appendChild(msg);
+      } else {
+        START_PAGES.forEach(pageNum => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          btn.innerHTML = `<span class="arrow">&#9733;</span>Start at page ${pageNum}`;
+          btn.addEventListener('click', () => goTo(pageNum, true));
+          buttons.appendChild(btn);
+        });
+      }
       menu.style.display = 'flex';
     }
 
