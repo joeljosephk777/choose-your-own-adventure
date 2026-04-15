@@ -1,0 +1,8 @@
+Timestamp: 2026-04-14
+Instruction (verbatim): "Please help me deploy this webapp/project on Netlify"
+Actions taken:
+1. Added netlify.toml at repo root with publish = "web".
+2. Seeded web/story_beginnings.txt with the checked-in beginnings list so the deployed reader has an initial start menu.
+3. Updated README.md with Netlify deployment settings and notes.
+Files changed: netlify.toml, web/story_beginnings.txt, README.md
+Validation: web/index.html and web/author.html diagnostics passed.

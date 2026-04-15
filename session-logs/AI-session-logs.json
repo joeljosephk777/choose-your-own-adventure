@@ -620,6 +620,16 @@
             "workflow": "Author marks pages in author tool; pages appear in reader start menu immediately via draft, without waiting for manual export.",
             "sourceLog": "log-20260414-5.txt"
           }
+        },
+        {
+          "requestId": "request_005",
+          "timestamp": "2026-04-14",
+          "message": {
+            "text": "Please help me deploy this webapp/project on Netlify"
+          },
+          "response": {
+            "summary": "Added Netlify deployment configuration with publish directory set to web, seeded web/story_beginnings.txt for the initial reader menu, and updated README.md with deployment settings and notes."
+          }
         }
       ]
     }
