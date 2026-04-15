@@ -34,9 +34,10 @@
 - [x] Show which endings are shared by multiple paths (converging branches)
 - [x] Allow editing existing story segments
 - [x] Allow deleting a story segment and unlinking it from the graph
-- [ ] Adding a new page should appropriately sync across the different views. 
+- [x] Adding a new page should appropriately sync across the different views. 
 - [ ] Read only viewer to read the entire story created by author
 - [ ] Visualize the shared endings, endings, unfinished endings using a filter feature. 
+- [ ] Once a user selects the next page in the author view, the other options for that decision level are no longer visible
 
 
 

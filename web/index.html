@@ -335,7 +335,6 @@
     let history = [];   // stack of page numbers visited
     let endings = new Set();   // page numbers reached that are terminals
     const AUTHOR_DRAFT_KEY = 'cyoa_author_draft_v1';
-    const FIXED_START_ROOTS = [2, 22, 56, 90, 97, 100, 117, 119, 120, 200];
 
     // ── Load data ──────────────────────────────────────────────────────────
     fetch('pages.json')
@@ -390,7 +389,22 @@
     }
 
     function computeStartPages() {
-      const roots = FIXED_START_ROOTS.filter(pg => PAGES[String(pg)]);
+      const incoming = {};
+      Object.keys(PAGES).forEach(pn => { incoming[pn] = 0; });
+
+      Object.values(PAGES).forEach(page => {
+        (page.choices || []).forEach(choice => {
+          const dst = String(choice.page);
+          incoming[dst] = (incoming[dst] || 0) + 1;
+        });
+      });
+
+      const roots = Object.keys(PAGES)
+        .filter(pn => (incoming[pn] || 0) === 0)
+        .map(Number)
+        .filter(Number.isFinite)
+        .sort((a, b) => a - b);
+
       return roots.length ? roots : [START_PAGE];
     }
 
@@ -496,18 +510,6 @@
         });
       }
 
-      if (isBeginningState(page.page)) {
-        START_PAGES
-          .filter(pn => pn !== page.page)
-          .forEach(rootPage => {
-            const btn = document.createElement('button');
-            btn.className = 'choice-btn';
-            btn.innerHTML = `<span class="arrow">&#9733;</span>Begin from page ${rootPage}`;
-            btn.addEventListener('click', () => goTo(rootPage, true));
-            choicesEl.appendChild(btn);
-          });
-      }
-
       const termEl = document.getElementById('terminal-msg');
       termEl.style.display = page.is_terminal ? 'block' : 'none';
     }
@@ -563,10 +565,6 @@
       const visited = new Set(history).size;
       const el = document.getElementById('progress');
       el.textContent = `Pages visited: ${visited} / ${total}  •  Endings found: ${endings.size}`;
-    }
-
-    function isBeginningState(pageNum) {
-      return history.length === 1 && pageNum === START_PAGE && START_PAGES.length > 1;
     }
 
     document.getElementById('start-menu').addEventListener('click', e => {

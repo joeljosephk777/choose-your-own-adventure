@@ -438,6 +438,16 @@
           "response": {
             "summary": "Updated web/index.html to show an initial start-menu screen instead of auto-opening the first page, and extended the fixed beginning list in web/index.html and web/graph.html to include page 200 (when present in the loaded data)."
           }
+        },
+        {
+          "requestId": "request_008",
+          "timestamp": "2026-04-14",
+          "message": {
+            "text": "When you add new pages using the author tool the expected behavior is that it will reflect those changes on the interactive reader. For instance, when I add a page that has no other pages pointing to it, it's a story starter or beginner page so it should be displayed in the initial state of the interactive reader."
+          },
+          "response": {
+            "summary": "Updated web/index.html to compute beginning pages dynamically from pages with zero incoming links (using merged author-draft data), removing the fixed root list so newly authored starter pages automatically appear in the reader start menu."
+          }
         }
       ]
     }
