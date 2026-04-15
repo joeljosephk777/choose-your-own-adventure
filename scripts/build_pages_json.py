@@ -137,9 +137,14 @@ def build_pages(pages_dir: Path, graph_path: Optional[Path]) -> Dict[str, dict]:
             "text": text,
             "choices": choices,
             "is_terminal": is_terminal,
+            "is_start": False,
         }
 
     return pages
+
+
+# Pages explicitly marked as story entry points
+DEFAULT_START_PAGES = [2, 22, 56, 90, 97, 100, 117, 119]
 
 
 def parse_args() -> argparse.Namespace:
@@ -148,6 +153,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--graph", type=Path, default=Path("output/cot-story-graph.mmd"))
     parser.add_argument("--output", type=Path, default=Path("web/pages.json"))
     parser.add_argument("--start-page", type=int, default=2)
+    parser.add_argument(
+        "--story-starts",
+        type=int,
+        nargs="+",
+        default=DEFAULT_START_PAGES,
+        help="Page numbers marked as story entry points.",
+    )
     return parser.parse_args()
 
 
@@ -159,8 +171,14 @@ def main() -> None:
 
     pages = build_pages(args.pages_dir, args.graph)
 
+    # Mark story entry points
+    for pn in args.story_starts:
+        if str(pn) in pages:
+            pages[str(pn)]["is_start"] = True
+
     meta = {
         "start_page": args.start_page,
+        "story_starts": sorted(args.story_starts),
         "total_pages": len(pages),
         "page_numbers": sorted(int(k) for k in pages),
     }

@@ -216,6 +216,106 @@
       text-align: right;
     }
 
+    /* Terminal ending action buttons */
+    .terminal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .terminal-actions .ctrl-btn {
+      background: var(--accent);
+      color: #fffef8;
+      border-color: var(--accent);
+      font-weight: bold;
+    }
+
+    .terminal-actions .ctrl-btn:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+      color: #fff;
+    }
+
+    /* Full story overlay */
+    #full-story-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 20, 8, 0.75);
+      z-index: 1000;
+      overflow-y: auto;
+      padding: 32px 16px 60px;
+    }
+
+    #full-story-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      background: var(--paper);
+      border-radius: 16px;
+      box-shadow: 0 8px 48px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    #full-story-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 24px 36px 18px;
+      border-bottom: 1px solid var(--choice-border);
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    #full-story-header h2 {
+      font-size: 1.25rem;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    #full-story-header .story-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .story-page-section {
+      padding: 28px 36px;
+      border-bottom: 1px solid var(--choice-border);
+    }
+
+    .story-page-section:last-child {
+      border-bottom: none;
+    }
+
+    .story-page-num {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .story-page-text {
+      font-size: 1.05rem;
+      line-height: 1.82;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    #full-story-footer {
+      padding: 20px 36px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-top: 2px solid var(--choice-border);
+      background: var(--bg);
+      position: sticky;
+      bottom: 0;
+    }
+
     /* Loading / error */
     #loading {
       font-size: 1rem;
@@ -292,8 +392,7 @@
 
   <header>
     <h1>The Cave of Time</h1>
-    <p class="subtitle">Choose Your Own Adventure &mdash; an interactive reader &nbsp;|&nbsp; <a href="#"
-        id="link-graph" style="color:var(--accent);font-style:normal">View Story Graph</a> &nbsp;|&nbsp; <a
+    <p class="subtitle">Choose Your Own Adventure &mdash; an interactive reader &nbsp;|&nbsp; <a
         href="author.html" style="color:var(--accent);font-style:normal">Author Tool</a></p>
   </header>
 
@@ -317,7 +416,11 @@
     <div id="page-text"></div>
     <div id="choices"></div>
     <div id="terminal-msg" style="display:none">
-      You have reached an ending. Use the trail above or the buttons below to explore another path.
+      You have reached an ending.
+      <div class="terminal-actions">
+        <button class="ctrl-btn" id="btn-view-journey">&#9654; View Journey Graph</button>
+        <button class="ctrl-btn" id="btn-read-story">&#9781; Read Full Story</button>
+      </div>
     </div>
   </div>
 
@@ -327,6 +430,23 @@
   </div>
 
   <div id="progress"></div>
+
+  <!-- Full story overlay -->
+  <div id="full-story-overlay" style="display:none">
+    <div id="full-story-wrap">
+      <div id="full-story-header">
+        <div>
+          <h2>Your Story</h2>
+          <div class="story-meta" id="story-meta"></div>
+        </div>
+        <button class="ctrl-btn" id="btn-close-story">&#10005; Close</button>
+      </div>
+      <div id="full-story-content"></div>
+      <div id="full-story-footer">
+        <button class="ctrl-btn" id="btn-restart-from-story">&#8635; Start Over</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     let PAGES = {};
@@ -347,38 +467,34 @@
         PAGES = merged.pages;
         START_PAGE = Number(merged.meta?.start_page) || 2;
 
-        // Load story_beginnings.txt
+        function computeStartPages(mergedData, filePages) {
+          // Pull from every source; accept both is_start (new) and is_story_beginning (legacy)
+          const fromFile = filePages || [];
+          const fromMeta = (mergedData.meta?.story_starts || []).map(Number).filter(Number.isFinite);
+          const fromPages = Object.values(mergedData.pages || {})
+            .filter(p => p.is_start || p.is_story_beginning)
+            .map(p => p.page);
+          return [...new Set([...fromFile, ...fromMeta, ...fromPages])].sort((a, b) => a - b);
+        }
+
+        // Load story_beginnings.txt (best source), fall back gracefully
         return fetch('story_beginnings.txt')
           .then(r => {
             if (!r.ok) throw new Error('not found');
             return r.text();
           })
           .then(text => {
-            const lines = text.trim().split(/\r?\n/).filter(line => line.trim());
-            const pagesFromFile = lines.map(line => Number(line.trim())).filter(Number.isFinite);
-
-            // Also include pages marked as story_beginning in author draft
-            const pagesFromDraft = Object.values(merged.pages)
-              .filter(page => page.is_story_beginning)
-              .map(page => page.page);
-
-            // Combine and deduplicate
-            const allBeginnings = [...new Set([...pagesFromFile, ...pagesFromDraft])].sort((a, b) => a - b);
-            START_PAGES = allBeginnings;
-
+            const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+            const fromFile = lines.map(l => Number(l.trim())).filter(Number.isFinite);
+            START_PAGES = computeStartPages(merged, fromFile);
+          })
+          .catch(() => {
+            START_PAGES = computeStartPages(merged, []);
+          })
+          .then(() => {
             if (!PAGES[String(START_PAGE)] && START_PAGES.length) {
               START_PAGE = START_PAGES[0];
             }
-          })
-          .catch(() => {
-            // If file fails, check author draft for marked beginnings
-            const pagesFromDraft = Object.values(merged.pages)
-              .filter(page => page.is_story_beginning)
-              .map(page => page.page)
-              .sort((a, b) => a - b);
-            START_PAGES = pagesFromDraft;
-          })
-          .then(() => {
             document.getElementById('loading').style.display = 'none';
             // Support ?page=N URL param (e.g. from graph.html "Read from here")
             const urlPage = parseInt(new URLSearchParams(window.location.search).get('page'));
@@ -438,7 +554,7 @@
           history.push(pageNum);
         }
 
-        if (page.is_terminal) endings.add(pageNum);
+        if (page.choices.length === 0) endings.add(pageNum);
 
         renderPage(page);
         renderTrail();
@@ -518,7 +634,9 @@
       const choicesEl = document.getElementById('choices');
       choicesEl.innerHTML = '';
 
-      if (!page.is_terminal && page.choices.length > 0) {
+      const isTerminal = page.choices.length === 0;
+
+      if (!isTerminal) {
         page.choices.forEach(choice => {
           const btn = document.createElement('button');
           btn.className = 'choice-btn';
@@ -529,7 +647,7 @@
       }
 
       const termEl = document.getElementById('terminal-msg');
-      termEl.style.display = page.is_terminal ? 'block' : 'none';
+      termEl.style.display = isTerminal ? 'block' : 'none';
     }
 
     function renderTrail() {
@@ -600,11 +718,63 @@
     document.getElementById('btn-back').addEventListener('click', goBack);
     document.getElementById('btn-restart').addEventListener('click', restart);
 
-    // ── View Story Graph — carry current path ──────────────────────────────
-    document.getElementById('link-graph').addEventListener('click', e => {
-      e.preventDefault();
-      try { localStorage.setItem('cyoa_reader_path', JSON.stringify(history)); } catch (_) { }
+// ── Full story view ────────────────────────────────────────────────────
+    function showFullStory() {
+      const content = document.getElementById('full-story-content');
+      content.innerHTML = '';
+
+      history.forEach(pageNum => {
+        const page = PAGES[String(pageNum)];
+        if (!page) return;
+
+        const section = document.createElement('div');
+        section.className = 'story-page-section';
+
+        const numEl = document.createElement('div');
+        numEl.className = 'story-page-num';
+        numEl.textContent = page.choices.length === 0
+          ? `Page ${page.page} — The End`
+          : `Page ${page.page}`;
+
+        const textEl = document.createElement('div');
+        textEl.className = 'story-page-text';
+        textEl.textContent = page.text;
+
+        section.appendChild(numEl);
+        section.appendChild(textEl);
+        content.appendChild(section);
+      });
+
+      document.getElementById('story-meta').textContent =
+        `${history.length} pages read  ·  path: ${history.join(' → ')}`;
+
+      const overlay = document.getElementById('full-story-overlay');
+      overlay.style.display = 'block';
+      overlay.scrollTop = 0;
+    }
+
+    // ── End-of-story buttons ───────────────────────────────────────────────
+    document.getElementById('btn-view-journey').addEventListener('click', () => {
+      syncProgress();
       window.open('graph.html', '_blank');
+    });
+
+    document.getElementById('btn-read-story').addEventListener('click', showFullStory);
+
+    document.getElementById('btn-close-story').addEventListener('click', () => {
+      document.getElementById('full-story-overlay').style.display = 'none';
+    });
+
+    document.getElementById('btn-restart-from-story').addEventListener('click', () => {
+      document.getElementById('full-story-overlay').style.display = 'none';
+      restart();
+    });
+
+    // Close overlay when clicking outside the story card
+    document.getElementById('full-story-overlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('full-story-overlay')) {
+        document.getElementById('full-story-overlay').style.display = 'none';
+      }
     });
 
     // ── Utility ────────────────────────────────────────────────────────────

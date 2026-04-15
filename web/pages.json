@@ -1,6 +1,16 @@
 {
   "meta": {
     "start_page": 2,
+    "story_starts": [
+      2,
+      22,
+      56,
+      90,
+      97,
+      100,
+      117,
+      119
+    ],
     "total_pages": 111,
     "page_numbers": [
       2,
@@ -126,7 +136,8 @@
           "page": 3
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": true
     },
     "3": {
       "page": 3,
@@ -141,7 +152,8 @@
           "page": 5
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "4": {
       "page": 4,
@@ -156,7 +168,8 @@
           "page": 10
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "5": {
       "page": 5,
@@ -171,7 +184,8 @@
           "page": 16
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "6": {
       "page": 6,
@@ -186,7 +200,8 @@
           "page": 114
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "8": {
       "page": 8,
@@ -197,7 +212,8 @@
           "page": 9
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "9": {
       "page": 9,
@@ -212,7 +228,8 @@
           "page": 18
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "10": {
       "page": 10,
@@ -231,31 +248,36 @@
           "page": 21
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "100": {
       "page": 100,
       "text": "It’s less than a mile to Parkersville, and the Pres-\nident shakes your hand and wishes you luck. One\nof the soldiers arranges with the station agent for a\ncarriage to take you to a farm owned by an old\nfriend of his.\n\nYou soon become amember of the family. They\nare good people and make you feel very much at\nhome. You are surprised to learn, however, that\nthey plan to sell their farm and move to California\nThe new life in the West they describe is so appeal-\ning that you decide to go with them.\n\nYou never regret it, except, sometimes, you\nwish you could see your own time again.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": true
     },
     "101": {
       "page": 101,
       "text": "With considerable trepidation you slide down\nthe tunnel. You mean to turn off at one of the side\npassageways that might take you back to your own\ntime, but you are too exhausted to search for the\nentrance. You half slide, half climb down the\ntunnel—further back into time—then you lose\nyour balance. You fall a great distance, land in\ndeep water, and sink a long ways.\n\nYou are barely able to surface and, when you\ndo, you find that the air is filled with dense fog. The\nwater is warm, but the fog is so thick you can\nhardly breathe. The air smells slightly of sulphur.\nGasping for breath, you realize you must be sev-\neral billion years in the past and that oxygen has\nnot yet been released into the atmosphere.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "102": {
       "page": 102,
       "text": "You sit down and rest your chin in your hands,\nunable to believe the fate that has befallen you. To\nlive forever in a timeless world seems worse than\ndeath.\n\n“Well, to tell the truth, there is a way to get back\nto your own time,” the woman finally says, “but, if\nyou follow it, you will not be able to live forever.”\n\n“1 don’t care,” you say. “Show me the way.”\n\n“Very well,” she says, shaking her head in dis-\nbelief. ‘‘Dive under the rock ledge beneath me and\nswim through the tunnel you will find there. You\nwill come up in your own time. Don’t worry, it’s\nonly a few yards. You can make it.”\n\nYou take a last look around, wave good-bye\nand dive. A few seconds later you surface in a\npond just inside the entrance of the Cave of Time.\nYou swim to shore and run out through the cave\nentrance into the open air, almost crashing into\nyour Uncle Howard, who has come looking for\nyou.\n\n“You're late for dinner,” he says. “We won-\ndered what happened to you. You ought to keep\nbetter track of the time.”\n\nThe End\n\n|",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "103": {
       "page": 103,
       "text": "The next day you call the Department of Zool-\nogy at a nearby university, where you are referred\nto Dr. Henry Kam, a specialist in large reptiles. Dr.\nKarn is skeptical about the egg but agrees to drive\nto Red Creek Ranch immediately to see it.\n\nBy the time he arrives, you are feeling very\nnervous. Suppose the egg is just made of plastic?\nYour concem is heightened by his stern appear-\nance. He shakes hands brusquely with you and\nyour uncle and immediately asks to see the egg.\n\nWhen you hand it to him, he says nothing while\nhe stares intently at it, holds it up to the light, taps it\nand scratches it with a pen knife. Then he holds it\nto his ear.\n\nFinally he smiles at you and gently puts the egg\ndown. “It’s quite possible this is the egg of a\nPlesiosaurus, an aquatic dinosaur of the late Juras-\nsic period. It is highly unlikely it will ever hatch.\nEven so, | would want to keep it in an incubator at\nthe University for at least a year before breaking it\nopen. ll + you know, of course, if anything de-\nvelops.””\n\nA few wecks have passed since then and\nwhenever the phone rings you wonder if Dr. Karn\nis calling.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "104": {
       "page": 104,
@@ -266,7 +288,8 @@
           "page": 105
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "105": {
       "page": 105,
@@ -281,7 +304,8 @@
           "page": 109
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "106": {
       "page": 106,
@@ -292,7 +316,8 @@
           "page": 113
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "107": {
       "page": 107,
@@ -303,13 +328,15 @@
           "page": 108
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "108": {
       "page": 108,
       "text": "pected, especially when you are required to climb\nthe rigging in a howling gale, but eventually you\nbecome captain of your own ship. In every place\nyou visit you ask the people you meet whether\nthey have ever heard of the Cave of Time.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "109": {
       "page": 109,
@@ -320,7 +347,8 @@
           "page": 110
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "11": {
       "page": 11,
@@ -335,13 +363,15 @@
           "page": 13
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "110": {
       "page": 110,
       "text": "1 110\n\nYou work hard to improve your skills as a\nprinter. Within a few years, with the help of some\nfriends, you are able to raise enough money to go\ninto business on your own.\n\nYour printing business thrives, and after awhile\nyou start your own newspaper. It begins to look as\nif the Eighteenth Century is a pretty good time for\nyou to be alive.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "111": {
       "page": 111,
@@ -352,19 +382,22 @@
           "page": 112
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "112": {
       "page": 112,
       "text": "When you finish recounting your tale, he says,\n“tis strange that we have met. I have tuberculosis,\nand no doctor in Boston can help me. My only\nhope is to reach a future time.”\n\n“T think it’s my only hope too,” you say.\n\n“Tf we help each other, I think we can find our\nway back to your time—my new time,” he replies.\n\nThe two of you shake hands on it and set out on\nyour quest the next day at sunrise.\n\nTogether, you are successful in finding your way\nto the present time. Your friend from the past is\ncured with the help of modern medicines and later\nbecomes a history teacher who is known through-\nout the country for his amazing knowledge of life in\ncolonial America.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "113": {
       "page": 113,
       "text": ": When you tell the guard you are innocent, he\nscowls and slams shut the door of the cell. “You'll\nnot take me to the devil with you!” he calls back as\nhe walks away.\n\nThe next day you are brought into a courtroom\nbefore a stern looking judge. After hearing the\ncharges against you and listening to what you have\nto say, he shakes his head and scowls angrily.\nThen he looks at the prosecutor and pounds his fist\non the bench.\n\n“Your charge against this person is for disor-\nderly conduct, but the specifications you give are\n‘strange clothes and telling stories invented by the\ndevil.” What you really are charging is witchcraft!\nThere will be no such madness in my court and let\nme have none of it again from you! Case dis-\nmissed.”\n\nThe judge not only sets you free, but afterwards\ngives you a home to live in and helps you on your\n\nway to a good and happy life in the Eighteenth\nCentury.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "114": {
       "page": 114,
@@ -375,25 +408,29 @@
           "page": 61
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "115": {
       "page": 115,
       "text": "You jump aboard and find yourself in a sealed\nchamber. The walls surrounding you remind you\nof the inside of a bathtub. It occurs to you that the\nbeings who control this spaceship have some\nmeans of manipulating time. Could it be that the\nCave of Time is their creation? As you are thinking\nthese thoughts, you become increasingly drowsy.\nIn a moment you are asleep.\n\nYou awaken in darkness, wondering if you may\nbe traveling through space in the alien ship. There\nis light coming toward you from one direction and\nyou get up and walk toward it. Then you realize\nyou are looking through the opening of your cave.\nYou huny out and, to your joy, find Snake Can-\nyon just as you remembered it. You are back in\nyour own time.\n\nIt's a long while before you feel like visiting\nSnake Canyon again. When you do, you find the\nopening to the Cave of Time has been covered\nover by a massive rock slide, and, you think to\nyourself that may be just as well.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "117": {
       "page": 117,
       "text": "ABOUT THE AUTHOR\n\nA graduate of Princeton University and Columbia\n' Law School, EDWARD PACKARD lives in New\n; York City, where he is a practicing lawyer. Mr.\nPackard conceived of the idea for the Choose\nYour Own Adventure® series in the course of\ntelling bedtime stories to his children, Caroline,\nAndrea, and Wells.\n\nABOUT THE ILLUSTRATOR\n\nPAUL GRANGER is a prize-winning illustrator\nand painter.",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": true
     },
     "119": {
       "page": 119,
       "text": "OWN\n\nTREASURE DIVER #32\n\nTHE DRAGON'S DEN #33\n\nTHE MYSTERY OF HIGHLAND CREST #34\nJOURNEY TO STONEHENGE, #35\n\nTHE SECRI EASURE OF TIBET #36\nWAR WITH THE EVIL POWER MASTER #37\nSUPERCOMPUTER #\n\nTHE THRONE OF Z|\nSEARCH FOR MOU}\n\n26522\n\nTHE DEADLY SHADO’\nOUTLAWS OF SHERWOOD “FORE St, #47\nSPY FOR GEORGE WASHIN\nDANGER AT ANCHOR MI\n\nTe AY.\n\nGHOST HUNTER 45:\n\nCASE OF THE SICK KING #53\n\nFOREST OF FEAR #54\n\nTRUMPET OF TERROR #\nINCHANTED KINGDO!\n\nTHE ANTIMATIBR FORMULA #57\n\nSTATUE OF LIBERTY ADVENTUR)\n\nTERROR ISLAND #5\n\nVANISHED! #60.\n\nBEYOND ESCAPE! #61\n\nSUGARCANE ISLAND #62\n\nMYSTERY OF THE SECRET ROOM #63\n\nVOLCANO #64\n\nMARDI GRAS MYSTERY #65\n\nTHE SECRET OF NINTA #66\n\nSEASIDE MYSTERY #67\n\nSECRET OF THE SUN GOD #68\n\nROCK & ROLL MYSTERY #69\n\nINVADERS OF THE PLANET EARTH #70\n\nSPACE VAMPIRE #71\n\nGHOST HUNTER #72\n\nBEYOND THE GREAT WALL #73\n\nLONGHORN TERRITORY #74\n\nPLANET OF DRAGONS #75,\n\nTHE MONA LISA Ts MISSING #76\n\nTHE FIRST OLYMPICS #77\n\nRETURN TO ATLANTIS #78\n\n26950 MYSTERY OF THE SACRED STONES #79\n\nPrices and availability subject to change without notice.\n\nBantam Books, Dept. AV, 414 East Golf Road, Des Plaines, IL 60016\n\nPlease send me the books | have checked above. | am enclosing $_\n(please add $2.00 to cover postage and handling). Send check or money order\n—no cash or C.0.D.s please.\n\nMr/Ms\nAddress.\nCity/State\n\nZip —\n\nAV—5/88\nPlease allow four to six Weeks for delivery. This offer expires 11/88",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": true
     },
     "12": {
       "page": 12,
@@ -404,7 +441,8 @@
           "page": 78
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "13": {
       "page": 13,
@@ -419,19 +457,22 @@
           "page": 15
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "14": {
       "page": 14,
       "text": "In a moment you are across the bridge and\ngalloping over the countryside, feeling a good deal\nsmarter than the King and his knights. When you\npass some shepherds and wave, they wave back.\n\nYou stop to rest at the cottage of a friendly\ngoatherd, who feeds you a good dinner. ‘‘Do not\nfear the King,” he says. “‘He is a fool who sits and\ndrinks grog all day. His only concern is deciding\nwho to put in the tower. His own knights laugh at\nhim, and he is more likely to fall from his throne\nthan you from your horse. Be off now and on to\nMerrie England, for great things await you there.\nGod speed and good fortune!’\n\nYour energies are renewed by good food and\ndrink, and your horse too is ready to ride. You\nthank your host warmly and ride off to new adven-\ntures and a new life—almost a thousand years\nbefore you are bom.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "15": {
       "page": 15,
       "text": "You gain entrance to the King and thank him for\nletting you out of the tower.\n\n“Think nothing of it,” the King replies. “We\nwould do as much for any villain. We like your\nspirit and, though your story makes as much sense\nas a dancing mule, it brought laughter to our eyes.\nYou have, without meaning it we are sure, per-\nformed a service for your King. We thank you.\n\n“We'll see that you have a horse and some\npieces of gold,”’ the King continues. “‘Go and\nmake your fortune. We command you though—\ncome once a year and tell us a story no less amus-\ning than what we have heard from your lips.”\n\n“My lord,”” you say.\n\n“My excellent vassal,” he replies.\n\nYou ride off, somewhat apprehensive, but in-\ntent upon making as much of your life as is possible\nin the year 982.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "16": {
       "page": 16,
@@ -446,7 +487,8 @@
           "page": 25
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "17": {
       "page": 17,
@@ -461,7 +503,8 @@
           "page": 28
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "18": {
       "page": 18,
@@ -472,7 +515,8 @@
           "page": 19
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "19": {
       "page": 19,
@@ -483,18 +527,20 @@
           "page": 30
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "20": {
       "page": 20,
       "text": "The tunnel to the left winds around like a spiral,\npassing several more tunnels. You turn down one\nof them, then climb steeply. In a few moments you\nclimb through a hole and emerge in a desert. The\nweather is extremely hot—certainly over 100 de-\ngrees, but the sun is just about to set, so it should\n\n| a be getting cooler. In the distance is a range of\ny | mountains. which look extremely high, yet are\n4 bare of snow. You have no idea whether youare in\ni the past, the future, or the present. Then you see\n\nsomething that fascinates and disturbs you. The\n\nsand seems to be fused into yellowish glass as if\n| heated in a furnace. As you examine the sand\n| more closely, you feel the air getting even hotter.\n| Suddenly you realize the sun is not setting, but\nrising! The noontime temperature must be more\ni than life can stand. As the sun rises higher, you feel\n| a blistering wave of heat. The light is almost blind-\ning. Could it be that you are witnessing the end of\nthe world?\n\nTurn to page 93.",
       "choices": [
         {
-          "label": "Turn to page 93",
-          "page": 93
+          "label": "Turn to page 31",
+          "page": 31
         }
       ],
-      "is_terminal": true
+      "is_terminal": false,
+      "is_start": false
     },
     "21": {
       "page": 21,
@@ -509,7 +555,8 @@
           "page": 35
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "22": {
       "page": 22,
@@ -520,7 +567,8 @@
           "page": 23
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": true
     },
     "23": {
       "page": 23,
@@ -535,7 +583,8 @@
           "page": 37
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "24": {
       "page": 24,
@@ -546,7 +595,8 @@
           "page": 38
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "25": {
       "page": 25,
@@ -557,7 +607,8 @@
           "page": 45
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "26": {
       "page": 26,
@@ -568,7 +619,8 @@
           "page": 27
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "27": {
       "page": 27,
@@ -579,7 +631,8 @@
           "page": 46
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "28": {
       "page": 28,
@@ -590,7 +643,8 @@
           "page": 51
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "29": {
       "page": 29,
@@ -601,7 +655,8 @@
           "page": 52
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "30": {
       "page": 30,
@@ -612,13 +667,15 @@
           "page": 92
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "31": {
       "page": 31,
       "text": "You take the first tunnel and follow it on and on\nuntil you begin to wonder whether you are going\naround in circles. What can this mean? Perhaps\ntime itself is slowing. You are nearing the point of\nexhaustion, and begin to feel very cold. Yousee an\nopening up ahead and stars shining. You step\noutside on barren ground. It is bitter cold. Even\nthough there is no wind, you know you will freeze\nif you stay more than a few minutes—maybe not\nthat long, for the air seems very thin, as if you were\non top of a very high mountain. You find yourself\ngasping for breath. You look up at the clear, cold\nnight sky studded with thousands of stars. Among\nthe stars, you notice a disk the size of the sun that\ngives off a dim red light like a dying ember.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "32": {
       "page": 32,
@@ -629,7 +686,8 @@
           "page": 64
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "33": {
       "page": 33,
@@ -640,7 +698,8 @@
           "page": 34
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "34": {
       "page": 34,
@@ -655,7 +714,8 @@
           "page": 79
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "35": {
       "page": 35,
@@ -670,7 +730,8 @@
           "page": 80
         }
       ],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "36": {
       "page": 36,
@@ -681,7 +742,8 @@
           "page": 11
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "37": {
       "page": 37,
@@ -692,7 +754,8 @@
           "page": 11
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "38": {
       "page": 38,
@@ -703,7 +766,8 @@
           "page": 39
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "39": {
       "page": 39,
@@ -718,7 +782,8 @@
           "page": 87
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "40": {
       "page": 40,
@@ -733,37 +798,43 @@
           "page": 83
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "41": {
       "page": 41,
       "text": "“T can understand,” the old man replies, “why\nyou don’t want to take a chance with another time,\nfor other times are perilous and filled with evil\npeople and evil deeds.\n\n“You are wise to avoid them, and I will gladly\ndirect you back to your own time, which, you\nshould know, is no better and no worse.”\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "43": {
       "page": 43,
       "text": "“And why do you want to be back with your\nfamily and friends?” the old man asks.\n\n“Because I will miss them and could hardly bear\nnot to see them again. And my family and friends\nwould be sad not to see me.”\n\n“You think of others, and you think of yourself\ntoo,” he replies. “‘That is a good reason to be in\nyour own time. Take the next tunnel to your right,\nand you will find your way there. You have chosen\nto have only one time, have you not?”\n\n“That is true,” you reply.\n\n“Then make the most of it,” he says, with one\nhand outstretched to wish you well.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "44": {
       "page": 44,
       "text": "“Ah, you are a shrewd one,” the old man says.\n“You'll try to get two loaves of bread, rather than\nSettle for one. Well, I'll show you one other time,\nand, if you don’t like it, just say so, and I'll return\nyou to your own time, if there is time to do so. Take\nthe tunnel to your left.”\n\nYou follow his direction, walk through the tun-\nnel, and come out onto a tity street. Instantly you\nrealize there is a war going on. Bombs and rockets\nare exploding all around you. You cry out to the\nold man, asking to be returned to the Cave of\nTime, but there is no time left.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "45": {
       "page": 45,
       "text": "A 45\n\n“Tam a philosopher,” the old man says, “who,\nwhen asked to choose a time, instead chose\ntimelessness, so that, although nothing would ever ;\nhappen in my life, I would have all the time in the :\nworld to think about it.”\n\n“Are you happy with your decision?”\n\n“No, because philosophy is nothing outside of\ntime. Take the tunnel to your right. Return to your\nown time, and let your life be your philosophy.”\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "46": {
       "page": 46,
       "text": "Dressed as warmly as possible in your crude\nboots and coat of animal skins, you leave shortly\nafter sunup with the others, a ragged band of thirty\nmen, women, and children. Luckily there are no\nbabies; they could never survive the migration.\nThe sun shows briefly through the clouds, the wind\nabates, and you make good progress on your\nsouthward journey.\n\nAfter only a few days of travel, everyone is\nnearing exhaustion. The hunters have not been\nable to find enough game. There is no way to light\na fire at night and the only way to keep from\nfreezing is to sleep huddled together.\n\nAfter a week though, you notice the sun shines\nmore warmly at midday and the snow is not quite\nso deep. It begins to look as though you will sur-\nvive, though you must give up hope of ever return-\ning to your own time.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "47": {
       "page": 47,
@@ -774,7 +845,8 @@
           "page": 48
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "48": {
       "page": 48,
@@ -789,18 +861,20 @@
           "page": 50
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "49": {
       "page": 49,
       "text": "Slowly you unsheath your knife and then run for i\nthe entrance. The wolf is after you like a shot. It ,\nleaps and tears your bearskin coat. While the wolf H\nis regaining its balance, you run into the cave and\ntoward the left tunnel. The wolf runs after you.\nYou look over your shoulder and lose your foot-\ning. Instead of falling on the ground, you feel H\nyourself sliding down a long, steep chute. Far\nabove, the wolf howls with frustration. You land in\na heap at the bottom of a pit—shaken but un-\nharmed. There is a dark passageway to the left.\nYou toss in a stone and, after what seems like a long\ntime, you hear a splash far below. Fortunately, :\nthere is another passageway to the right, which is\ndimly lit by phosphorescent light.\n\nTurn to page 25.",
       "choices": [
         {
-          "label": "Turn to page 25",
-          "page": 25
+          "label": "Turn to page 45",
+          "page": 45
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "50": {
       "page": 50,
@@ -811,25 +885,29 @@
           "page": 81
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "51": {
       "page": 51,
       "text": "Suddenly you hear voices shouting. You hide in\nathicket. An animal crashes through the brush. In\na moment some men rush by in pursuit, carrying\nspears and slings. You imagine that you must be in\nan era long before the advent of civilization. You\nfollow an animal trail; it soon leads to a clearing,\nand you lie down in the grass to rest. Looking up in\nthe sky, you see a long, thin, white streak. You rub\nyour eyes and look again. It seems to be a vapor\ntrail from a jet plane! You may be living in the\npresent time after all.\n\nAfter several days of wandering through the\njungle, you reach a settlement on the banks of a\nlarge river. There is an airfield nearby, and within a ‘\nfew weeks you are able to obtain a ride back to\n\ncivilization and return to your family—just a month t\nafter you first entered the Cave of Time. You are \\\nhappy to be back home, but shocked at how much ‘\nolder everyone looks. And they express the\n\ngreatest surprise that after eleven years you }\n\nhaven’t changed a bit!\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "52": {
       "page": 52,
       "text": "You work your way back to the mammoth’s\nrump and slide down, landing hard on the icy\nground, where you lie aching and bruised, while\nthe mammoth lumbers on. Suddenly it disap-\npears, driven off the cliff. The hunters are shouting\nand cheering. Some of them come up to you.\nThey are short and muscular, their jaws jut out,\nand they have bright squinting eyes. Their black\nhair hangs down to their shoulders. They are\ndressed in animal skins\n\nYou look up helplessly, wondering what they\nwill do to you, but in an instant you can see they\nwill not hurt you. They help you up and carry you\nback to their cave and feed you steaming broth. It\ntastes awful, but makes you feel much better. You\nsoon learn that the cave people will accept you as\none of them, because you have—without realizing\nit—performed the sacred rite of their culture by\nriding bravely on the back of a mammoth.\n\nLife is harsh and simple with the cave people,\n\ni and sometimes you long for your family, your\nfriends, and your own time again; yet your new life\nis as exciting and happy as you could wish for.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "53": {
       "page": 53,
       "text": "] 53\n\nYou hold tightly to tufts of wool, hoping the\nmammoth will slow down enough so you can :\nsafely slide off. But suddenly it pitches forward,\nmaking a terrible bellowing. In an instant you\nrealize you are falling through space. You cry out\nhelplessly as you lose your grip, falling faster and\n‘aster.\n\nThousands of years later when Dr. Carleton\nFrisbee, the famous paleontologist, finds your\nbones next to those of a wooly mammoth in the\nRed Creek excavation, he is amazed at how\nclosely you resemble a twentieth-century human\nbeing.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "54": {
       "page": 54,
@@ -840,7 +918,8 @@
           "page": 55
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "55": {
       "page": 55,
@@ -855,7 +934,8 @@
           "page": 98
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "56": {
       "page": 56,
@@ -870,13 +950,15 @@
           "page": 60
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": true
     },
     "57": {
       "page": 57,
       "text": "Your hosts give you a fine bedroom with large !\nwindows overlooking the park on one side. On I\nanother wall is a beautiful painting of the California f\nseacoast. When you push a button, the painting |\nfolds up to the ceiling, revealing a large screen.\nYour room contains a computer terminal that en-\nables you to select any movie or other program\nyou desire from over 10,000 possibilities. There\nare even films where you are the main character\nand you can make choices as to what will happen\nnextin the story. Then, if you don’ tlike the way the\nplot is working out, you can go back to an earlier\npoint and make different choices from then on.\n\nOn your terminal you can also play games and s\nflash pages of books or magazines on the screen.\nYou can live quite well without even getting out of\nbed. 5\n\nEventually you go exploring. You meet other ‘\npeople, but you find none of them very interesting,\nso you spend most of your time watching the iN\ngreatest movies of all time. Gradually you settle\ninto your new life. One thing disturbs you. No one N\n\nhas made any new movies in the last 300 years.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "58": {
       "page": 58,
@@ -887,7 +969,8 @@
           "page": 59
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "59": {
       "page": 59,
@@ -898,13 +981,15 @@
           "page": 62
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "60": {
       "page": 60,
       "text": "There is something deadening about the perfect\nfuture society that makes you want to return to\nyour own time as quickly as possible. With a brief\nword of farewell, you hurry back to the tunnel,\nclimb down, and find a fork to the right that you\nhope will take you toward the right time. Soon you\nare climbing up toward the surface, excited about\nthe discovery you are about to make.\n\nWhen you reach the surface, it is completely\ndark. A chill wind is blowing. You sit resolutely\nwaiting for dawn so that you can see what kind of a\n\nworld you are in. Meanwhile, there is no way of\ntelling what time itis, either by your watch or by the\nstars.\n\nYou hear loud, clicking sounds all around you,\n\nmostly in the distance, but some quite close. As the\norange-pink glow of oncoming dawn lightens the\n\n| eastern sky, you see nearby the shape of a creature\nthat is the size of a sheep but has a very different\nappearance.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "61": {
       "page": 61,
@@ -919,19 +1004,22 @@
           "page": 106
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "62": {
       "page": 62,
       "text": "Your friends are understanding about your wish\nto find the way back to your own time, but they tell\nyou they can show you something you never\ndreamed of. Since their society is very primitive,\nyou wonder what they could have in mind.\n\nNext day they lead you to another cove where\nthe waves roll in, rise up against the cliff and then\nroll out again. Sometimes the waves clap against\neach other and senda foamy spray of water high in\nthe air. You see some young people on tiny\nrafts—nothing more than surfboards—riding in on\nthe crests of the waves and then riding them out on\nthe rebound. In a few hours you have learned a\nsport that brings excitement and fascination for\nhour after hour.\n\nWith such delights as this, it is not long before\nyou lose interest in returning to your own time.\nSometimes you wonder, but you never learn,\nwhether this paradise lies in the future or the past.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "63": {
       "page": 63,
       "text": "You hug your friends good-bye and climb the\nridge bordering the jungle. You soon find an ani- ]\nmal trail leading through the dense undergrowth\ninto a tropical rain forest. The green canopy of\ntreetops is far overhead and only an occasional\ndapple of sunlight reaches the spongy, dark\nground. You walk on and on, hoping to reach the\nmountains, where you might find another en-\ntrance to the Cave of Time.\n\nNight falls and you make yourself a crude bed.\nYour mattress is the mossy floor of the forest. You\nspread out fem leaves for a sheet. Early the next\nmoming, as the birds are beginning their moming\nsongs, you are awakened by the boa constrictor~\nwrapped around your neck.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "64": {
       "page": 64,
@@ -942,7 +1030,8 @@
           "page": 65
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "65": {
       "page": 65,
@@ -953,7 +1042,8 @@
           "page": 102
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "66": {
       "page": 66,
@@ -968,7 +1058,8 @@
           "page": 74
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "68": {
       "page": 68,
@@ -979,13 +1070,15 @@
           "page": 69
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "69": {
       "page": 69,
       "text": "“Now go to the deck below. Mr. Lightoller will\nsee that you have a place in a lifeboat.”\n\nWith that the captain turns and strides away,\ngiving orders to an officer nearby. You sadly return\ndown the stairs and wait in line for one of the\nplaces in a lifeboat.\n\nTwo hours later, you sit huddled in the crowded\nboat, shivering in the cold breeze, and watch the\ngreat Titanic slip beneath the waves—with 1,500\npeople still aboard—together with your only hope\nof finding your way back to the Cave of Time.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "70": {
       "page": 70,
@@ -996,7 +1089,8 @@
           "page": 71
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "71": {
       "page": 71,
@@ -1007,7 +1101,8 @@
           "page": 72
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "72": {
       "page": 72,
@@ -1018,19 +1113,22 @@
           "page": 73
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "73": {
       "page": 73,
       "text": "The next day is Friday, and that evening the\nwhole family goes out to the movies. When you\nreturn, you find the house has been broken into\nand the egg is missing:\n\nNeither you, your aunt and uncle, nor any of the\nranch hands, nor the police are ever able to find\nthe egg. Most people you tell your story to just\nsmile and say, “Sure.” But Uncle Howard, even\nthough he is a skeptical man, tells you he knows\nyou were telling the truth.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "74": {
       "page": 74,
       "text": "The idea that the Loch Ness monster goes into\nthe Cave of Time for a hundred years or so before\nreturning seems preposterous. And, even ifit does,\nit seems very doubtful you could dive down deep\nenough to find the underwater entrance. So you\nresign yourself to making a living fishing the waters\nof Loch Ness.\n\nYou find it a tolerable, though not very interest-\ning, life. You particularly like rowing out in your\nskiff in the early morning mists and watching the\npale, red sun struggling to shine through the haze.\nThat's what you are doing one day when you feela\ntremendous thump under your boat, the stern is\nheaved high into the air, and you are hurled over\nthe bow and into the jaws of the monster.\n\nSome of your friends find the wreckage of your\nboat later in the day and, throughout the village,\npeople say to each other—“The monster has re-\nturned again.”\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "76": {
       "page": 76,
@@ -1041,19 +1139,22 @@
           "page": 77
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "77": {
       "page": 77,
       "text": "“Sure—and not alongside buses and trucks and +f\ncrazy drivers, but through forests and across plains  % |\nand deserts and along rivers and streams. Isome-\ntimes feel like biking forever that way, and there\nare hostels for bikers where you can sleep in com-\nfort for almost nothing. Most of the cost is paid for\nby taxes on gasoline.”\n\nSuddenly you feel the ground giving way be-\nneath your feet. You and Louisa are falling. The\ntwo of you land at the base of a steep bluff, shaken\nbut unharmed, alongside a road. You wonder\nwhat year you have arrived in. Then, nearby, you\nsee a billboard that says, ““CADILLAC—the Car of\nthe Year, every Year!”\n\n“What's a Cadillac?” Louisa asks.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "78": {
       "page": 78,
       "text": "You'd rather spend the rest of your life search-\ning for an entrance to the Cave of Time than settle\nfor the placid life of a fishing village. So you bid\nyour new friends farewell and set out over the\ncountryside, headed south for London. Your goal\nis to find a ship to take you to America, though you\nknow America hasn’t been discovered yet, for\nsomehow you must find your way back to Red\nCreek Canyon and the Cave of Time\n\nA few hours later, as you are walking on a road\nalong the edge of the forest, some burly men ride\nout from behind a clump of trees.\n\n“We've got you,” one shouts. “You're the one\nwho escaped from the tower, aren’t you?” They\nforce you upon a horse and ride at top speed\ntoward the castle.\n\n“The penalty for escaping from the tower is\nhanging,” one of them tells you.\n\nYou find out he is right.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "79": {
       "page": 79,
@@ -1064,25 +1165,29 @@
           "page": 86
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "80": {
       "page": 80,
       "text": "“Since you can’t find your way to your own\ntime,” you say, “perhaps we can find my time.”\nYou lead her back a short distance, until you\ncome to an unusually wide tunnel. You stop, and\nLouisa looks at you inquiringly. ‘‘Let’s try this\none,” you say.\n\nAfter traveling almost an hour, the two of you\nsmile with joy to see light ahead, and you soon\ncome out of the tunnel and stand on reddish\nsandy ground, surveying a saucer-shaped terrain.\nThe air is as fresh and clear as on a crisp, fall day.\nYou guess that you may be in the crater of an\nextinct volcano. Suddenly, there is a thundering\nroar behind you. Louisa and you run from a\nlandslide that buries the tunnel leading back to\nthe Cave of Time.\n\n“T wonder what year it is?”’ Louisa asks, after\nthe two of you have collected your wits.\n\nFor the first time you look up at the sun. It is\nfour times as large as the sun you knew, though\nnot as bright. It is almost directly overhead, yet its\ncolor is a rusty red.\n\n“T don’t know the answer,” you reply, “but\nfrom what I’ve read about astronomy, I would\nguess it’s the year 2,000—plus about four billion\nyears.”\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "81": {
       "page": 81,
       "text": "You feel yourself slowly regaining conscious-\nness. You are in your bed at Red Creek Ranch,\nlooking up at Uncle Howard. Standing nearby is a\nfriend of his who is a doctor.\n\n“You took quite a bad fall climbing on those\nrocks up in the canyon,” Uncle Howard says.\n“Doc Parsons tells me he doesn’t know why you\ndidn’t break any bones. We were real worried\nabout you—thought you got lost in one of those\ncaves up there.”\n\nYou feel a bit dizzy and weak, so you just smile\nand say nothing. Probably no one would believe\nyou anyway. Years later, though, you write a book\nabout your adventures in the Cave of Time.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "82": {
       "page": 82,
       "text": "You go up to the base of the wall where the |\npeople are working. When they see you, they\nimagine you are a spy from some unknown tribe.\nSome guards capture you and force you to sit on a\npile of rocks while they talk about you.\n\nAfter a while they point to one of the ladders.\nTwo other people force you to start handing up\nrocks. You realize that you have been conscripted\nto work building a wall twenty feet high, twelve feet\nwide, and 1,400 miles long. You calculate it will\ntake about ten billion rocks to build the wall. You\nwonder how many of them you will lift before you\ncan escape—if you ever do.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "83": {
       "page": 83,
@@ -1097,31 +1202,36 @@
           "page": 84
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "84": {
       "page": 84,
       "text": "You run up the hill and out of sight before any of\nthe primitive people awaken. You must find an\nentrance to the Cave of Time. You search in the\nhigh rocky ground for some opening. Hours go by;\ndusk is fast approaching. Just as you are about to\ngive up hope, you spy the entrance to a cave under\na rock ledge. You eagerly step inside and have\nonly a moment's awareness that it is the den of a\nsaber-toothed tiger.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "85": {
       "page": 85,
       "text": "The people look around curiously. They hardly\nseem to notice your presence. One by one they get\nup and walk around. One of them drinks from the\nstream. They make grunting and clicking noises,\nbut do not seem to be actually talking among\nthemselves. The largest of the group picks up a\nstick from the ground and begins prying up the\nroots of plants along the edge of the stream. He\nbites at each one. Finally he smiles and passes the\nroot around to the others. One woman claps her\nhands. The others begin to find sticks. One of the\nmen hands you a piece of root. You bite at it. It\ntastes like a dirty carrot. The women smile at you.\nYou are accepted in the group.\n\nThe next morning you wake up in the soft mossy\nbank in Snake Cavern, a few dozen yards from the\nentrance to the cave, wondering how much of\nwhat has been happening to you has been a\ndream and how much has been reality. But you\nhave no desire to go into the Cave of Time again.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "86": {
       "page": 86,
       "text": "You walk on and on, hoping the passageway\nwill lead you to your own time. You soon come to\na tunnel that leads into a dark, musty room re-\nsembling the cellar of a large house. There are a\ngreat many people huddled in groups, sitting on\nblankets in complete darkness save for the light of\na few flickering candles. You hear the dismal wail\nof a siren, Near the center of the room an old-\nfashioned radio sits on the table playing a mixture\nof classical music and static. Then the sirens stop,\nthe ground shakes, and you hear a tremendous\nexplosion nearby, then another further away, then\nanother so close that a wall and half the ceiling\ncome crashing down in a pile of rubble, blocking\nthe tunnel. You and the others scramble to the\n| opposite side of the room, coughing and gasping\nin the dust-filled air.\n\nYou are about to begin a new life. The year is\n1940; the place, London.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "87": {
       "page": 87,
       "text": "You have no desire to be involved in building\nthe Great Wall of China, or, for that matter, to be\ntaken to another planet by aliens. You walk back |\ninto the crevasse, hoping to find a tunnel that |\nmight lead to another time. You walk along the\nbottom of the crevasse and reach an opening on\nthe other side of the ridge, where you half expect\nto see the rolling countryside, the stream and the\nspace ship that were there before.\n\n; Instead, the crevasse leads to the ocean! Like a\n\n/ bad dream, where the scene suddenly changes\n\n| into something entirely different, you find that the\nhills have become waves, which surround you so\nthat the rock you are standing on is only a reef\n\n; protruding a few yards above the wind-swept seas.\n\nAnd there seems to be no escape, because, for all\n\nyou can tell, you are standing on the only land in\n\nthe world.\n\n: The End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "88": {
       "page": 88,
@@ -1132,7 +1242,8 @@
           "page": 89
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "89": {
       "page": 89,
@@ -1143,13 +1254,15 @@
           "page": 91
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "90": {
       "page": 90,
       "text": "Inside the cave again, you feel depressed and\nconfused. Your eyes do not seem to be getting\nused to the dim light. You cannot find any pas-\n\n| sageways leading to other times. You feel increas-\ningly drowsy. Soon you fall asleep on the cold clay\n\n| floor of the cave.\n. Sometime later you awaken. The cave is pitch\n\ndark, but the bright light at the opening tells you\n| the sun is shining brightly outside. You walk out\ninto the daylight and, to your surprise and delight,\nyou see Snake Canyon, the trail, the grove of pine\ntrees nearby—everything just as it was when you\nentered the cave. Even the sun is in the same\nplace, just about to pass behind the rim of the\ncanyon. Somehow you have returned to your own\ntime—or more precisely, the time it was before\nyou fell asleep in the cave.\nYou rub your eyes and start down the path back\nto the Red Creek Ranch with a story to tell that no\none will believe, but that you will never forget.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": true
     },
     "91": {
       "page": 91,
@@ -1160,7 +1273,8 @@
           "page": 92
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "92": {
       "page": 92,
@@ -1171,7 +1285,8 @@
           "page": 93
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "93": {
       "page": 93,
@@ -1182,7 +1297,8 @@
           "page": 31
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "94": {
       "page": 94,
@@ -1193,19 +1309,22 @@
           "page": 96
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "96": {
       "page": 96,
       "text": "“Td like to stay on till Gettysburg,” you say.\n\n“Well, that’s fine,” the President replies. “Why\ndon’t you sit across from me? I have to write outa\nlittle talk ['m giving there, and, while ['m doing\nthat, you think about what you re going to make of\nyour life, because you can’t spend all your time\nriding on trains, after all.”\n\nYou nod in.agreement and sit quietly watching\nthe President scribbling some lines on an en-\nvelope. After awhile he looks up from his writing\nand you look each other in the eyes.\n\n“You have a great future,”’ he says abruptly.\n\n“How can you tell,” you ask.\n\n“By looking at your face.”\n\n“Just by that?”\n\n“Just so.”\n\nAs you are talking, you notice two elaborately\ndressed men approaching from the end of the car.\nThey whisper a few words to the President. He\nexcuses himself, shakes hands with you, and tells\none of his soldiers to see that you are provided for\nin Gettysburg.\n\nGo on to the next page.",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     },
     "97": {
       "page": 97,
       "text": "When you arrive at Gettysburg, one of the sol-\ndiers takes you to a family who welcomes you\nwarmly and agrees to put you up for awhile, if you\nwill help them out with their farm.\n\nYou find it amazing to be living in a time with no\ncars, radios, television, record players, or even\ntelephones. It’s peaceful—at least when there is\nnot a war going on—but you feel homesick. You\nfeel the great future the President predicted for you\nlies in your own time, and you resolve to find your\nway back to the Cave of Time.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": true
     },
     "98": {
       "page": 98,
@@ -1216,13 +1335,15 @@
           "page": 99
         }
       ],
-      "is_terminal": false
+      "is_terminal": false,
+      "is_start": false
     },
     "99": {
       "page": 99,
       "text": "Philadelphia to go to New York, where you are\nable to find a job working for a newspaper. Even-\ntually you travel all over the world. You live along\nand wonderful life, dying just a few years before\nyou are born.\n\nThe End",
       "choices": [],
-      "is_terminal": true
+      "is_terminal": true,
+      "is_start": false
     }
   }
 }

@@ -619,7 +619,6 @@
                             <input id="filter-text" type="text" placeholder="Search by page number or text" />
                         </div>
                         <div class="controls-row">
-                            <button class="btn primary" id="btn-new-page">New page</button>
                             <button class="btn" id="btn-clear-filters">Clear filters</button>
                         </div>
                         <div class="controls-row" style="margin-top:8px">
@@ -690,7 +689,7 @@
                         </div>
                         <div class="legend-row">
                             <div class="legend-dot" style="background:var(--purple-bg);border-color:var(--purple-bd)">
-                            </div> Shared ending
+                            </div> Shared ending (multiple paths)
                         </div>
                     </div>
                     <div id="cy"></div>
@@ -711,24 +710,41 @@
             </div>
             <div class="panel-body">
                 <div class="stack">
+
+                    <!-- ── New Page ── -->
+                    <div class="card" style="border:1.5px solid var(--green-bd);background:var(--green-bg)">
+                        <div class="section-title">
+                            <h3 style="color:var(--green-bd)">Add new page</h3>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:flex-end">
+                            <div class="field-group" style="flex:1;margin:0">
+                                <label for="new-page-number">Page number</label>
+                                <input id="new-page-number" type="number" min="1" step="1" placeholder="e.g. 42" />
+                            </div>
+                            <button class="btn good" id="btn-create-page" style="flex-shrink:0">Create</button>
+                        </div>
+                        <div class="split-note" style="margin-top:6px">Creates a blank page and opens it in the editor below.</div>
+                    </div>
+
+                    <!-- ── Save / Actions ── -->
                     <div class="card">
                         <div class="section-title">
-                            <h3>Actions</h3>
-                            <span class="info-chip" id="save-target-label">Saving to browser draft</span>
+                            <h3>Save</h3>
+                            <span class="info-chip" id="save-target-label">Draft in browser</span>
                         </div>
                         <div class="controls-row">
                             <button class="btn good" id="btn-save-page">Save page</button>
-                            <button class="btn" id="btn-save-file">Save to file</button>
+                            <button class="btn primary" id="btn-save-file">Save to pages.json</button>
                             <button class="btn" id="btn-download-json">Download JSON</button>
-                            <button class="btn danger" id="btn-delete-page">Delete page</button>
                         </div>
                         <div class="controls-row" style="margin-top:8px">
-                            <button class="btn" id="btn-download-beginnings">Download story_beginnings.txt</button>
+                            <button class="btn danger" id="btn-delete-page">Delete page</button>
+                            <button class="btn" id="btn-download-beginnings">Download beginnings</button>
                             <button class="btn" id="btn-reset-draft">Reset draft</button>
                         </div>
-                        <div class="split-note" style="margin-top:8px">
-                            Edits are stored in browser localStorage automatically. Use Save to file or Download JSON to
-                            persist them to disk.
+                        <div id="save-feedback" style="margin-top:8px;font-size:0.78rem;color:var(--green-bd);display:none;font-weight:600"></div>
+                        <div class="split-note" style="margin-top:6px">
+                            <strong>Save to pages.json</strong> — click, then navigate to <code>web/pages.json</code> in the file picker to overwrite it. Press <kbd>Ctrl+S</kbd> / <kbd>Cmd+S</kbd> to quick-save to the same file again.
                         </div>
                     </div>
 
@@ -801,6 +817,7 @@
 
         let baseline = { meta: { start_page: 2 }, pages: {} };
         let draft = {};
+        let dirtyPageSet = new Set(); // page numbers explicitly saved by the author
         let selectedPage = null;
         let originalSelectionPage = null;
         let currentFilter = 'all';
@@ -822,17 +839,22 @@
             };
         }
 
+        // Hardcoded story entry points — always marked as is_start on load
+        const DEFAULT_START_PAGES = new Set([2, 22, 56, 90, 97, 100, 117, 119]);
+
         function normalizePage(num, page) {
             const pageNum = Number(num);
             const choices = Array.isArray(page?.choices) ? page.choices.map(normalizeChoice).filter(c => Number.isFinite(c.page)) : [];
             const terminal = typeof page?.is_terminal === 'boolean' ? page.is_terminal : choices.length === 0;
-            const beginning = typeof page?.is_story_beginning === 'boolean' ? page.is_story_beginning : false;
+            // Accept is_start (pages.json) or the old is_story_beginning field (legacy localStorage)
+            const explicitStart = page?.is_start ?? page?.['is_story_beginning'];
+            const beginning = typeof explicitStart === 'boolean' ? explicitStart : DEFAULT_START_PAGES.has(pageNum);
             return {
                 page: pageNum,
                 text: String(page?.text || '').trim(),
                 choices,
                 is_terminal: terminal,
-                is_story_beginning: beginning,
+                is_start: beginning,
             };
         }
 
@@ -857,16 +879,37 @@
                 })
                 .then(data => {
                     baseline = data;
+                    // Always start from the fresh baseline
                     draft = clone(data.pages || {});
                     const stored = localStorage.getItem(STORAGE_KEY);
                     if (stored) {
                         try {
                             const parsed = JSON.parse(stored);
                             if (parsed && parsed.pages) {
-                                draft = sanitizeDraft(parsed.pages);
+                                // Restore which pages the author explicitly edited
+                                const savedDirty = new Set(parsed.dirtyPages || []);
+                                dirtyPageSet = savedDirty;
+                                const storedPages = sanitizeDraft(parsed.pages);
+                                // Only apply localStorage overrides for pages the author edited,
+                                // plus any brand-new pages that aren't in the baseline.
+                                Object.entries(storedPages).forEach(([key, page]) => {
+                                    if (savedDirty.has(key) || !data.pages[key]) {
+                                        draft[key] = page;
+                                    }
+                                });
                             }
                         } catch (_) { }
                     }
+                    // Always ensure hardcoded start pages are marked is_start: true
+                    DEFAULT_START_PAGES.forEach(pn => {
+                        const key = String(pn);
+                        if (draft[key]) draft[key].is_start = true;
+                    });
+                    // Also honour story_starts from meta (in case more were added via author tool)
+                    (data.meta?.story_starts || []).forEach(pn => {
+                        const key = String(pn);
+                        if (draft[key]) draft[key].is_start = true;
+                    });
                     markClean(true);
                     if (!selectedPage) {
                         selectedPage = String(data.meta?.start_page || 2);
@@ -918,14 +961,15 @@
             const key = String(pageNum);
             const page = draft[key];
             if (!page) return { kind: 'missing', label: 'Missing target' };
-            const hasChoices = page.choices.length > 0;
+            // A page is terminal purely by structure: no outgoing choices (nothing on left side of any arrow).
+            const isTerminal = page.choices.length === 0;
             const missingTargets = page.choices.some(choice => !draft[String(choice.page)]);
-            if (page.is_terminal || !hasChoices) {
-                return refs > 1 && page.is_terminal
-                    ? { kind: 'shared', label: 'Shared ending' }
-                    : page.is_terminal
-                        ? { kind: 'terminal', label: 'Ending' }
-                        : { kind: 'unfinished', label: 'Unfinished branch' };
+            // Shared ending = structurally terminal AND reached by multiple paths
+            if (isTerminal && refs > 1) {
+                return { kind: 'shared', label: 'Shared ending' };
+            }
+            if (isTerminal) {
+                return { kind: 'terminal', label: 'Ending' };
             }
             if (missingTargets) {
                 return { kind: 'orphan', label: 'Broken link' };
@@ -1042,10 +1086,10 @@
         }
 
         function loadEditor(pageNum) {
-            const page = draft[String(pageNum)] || normalizePage(pageNum, { page: Number(pageNum), text: '', choices: [], is_terminal: false, is_story_beginning: false });
+            const page = draft[String(pageNum)] || normalizePage(pageNum, { page: Number(pageNum), text: '', choices: [], is_terminal: false, is_start: false });
             el('page-number').value = page.page;
             el('page-text').value = page.text || '';
-            el('page-beginning').checked = Boolean(page.is_story_beginning);
+            el('page-beginning').checked = Boolean(page.is_start);
             el('page-terminal').checked = Boolean(page.is_terminal);
             renderChoiceEditor(page.choices || []);
             el('editor-title').textContent = `Page ${page.page}`;
@@ -1128,9 +1172,11 @@
                 }
                 updateReferences(oldKey, newKey);
                 delete draft[oldKey];
+                dirtyPageSet.delete(oldKey);
             }
 
-            draft[newKey] = normalizePage(pageNum, { page: pageNum, text, choices, is_terminal: isTerminal, is_story_beginning: isBeginning });
+            draft[newKey] = normalizePage(pageNum, { page: pageNum, text, choices, is_terminal: isTerminal, is_start: isBeginning });
+            dirtyPageSet.add(newKey); // mark this page as explicitly authored
             selectedPage = newKey;
             originalSelectionPage = newKey;
             persistDraft();
@@ -1155,6 +1201,7 @@
                 return;
             }
             delete draft[key];
+            dirtyPageSet.delete(key);
             scrubReferences(key);
             if (!draft[String(baseline.meta?.start_page || 2)]) {
                 draft[String(baseline.meta?.start_page || 2)] = normalizePage(Number(baseline.meta?.start_page || 2), { page: Number(baseline.meta?.start_page || 2), text: '', choices: [], is_terminal: false });
@@ -1174,7 +1221,11 @@
         }
 
         function persistDraft() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({ meta: baseline.meta, pages: draft }));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                meta: baseline.meta,
+                pages: draft,
+                dirtyPages: [...dirtyPageSet],
+            }));
             el('save-target-label').textContent = 'Saved to browser draft';
         }
 
@@ -1186,9 +1237,18 @@
                     pages[String(num)] = normalizePage(num, draft[String(num)]);
                 }
             });
+            // Collect all pages marked as story beginnings
+            const storyStarts = pageNumbers
+                .filter(num => pages[String(num)]?.is_start)
+                .sort((a, b) => a - b);
+            // Merge with hardcoded defaults so they're never lost
+            const mergedStarts = [...new Set([...DEFAULT_START_PAGES, ...storyStarts])]
+                .filter(n => pages[String(n)])
+                .sort((a, b) => a - b);
             return {
                 meta: {
                     start_page: baseline.meta?.start_page || 2,
+                    story_starts: mergedStarts,
                     total_pages: Object.keys(pages).length,
                     page_numbers: pageNumbers,
                 },
@@ -1208,7 +1268,7 @@
 
         function downloadBeginnings() {
             const beginningPages = Object.values(draft)
-                .filter(page => page.is_story_beginning)
+                .filter(page => page.is_start)
                 .map(page => page.page)
                 .sort((a, b) => a - b);
             const content = beginningPages.join('\n');
@@ -1236,7 +1296,10 @@
                 await writable.close();
                 saveHandle = handle;
                 el('save-target-label').textContent = 'Saved to file';
-            } catch (_) { }
+                showSaveFeedback('Saved to pages.json ✓');
+            } catch (err) {
+                if (err.name !== 'AbortError') showSaveFeedback('Save failed: ' + err.message);
+            }
         }
 
         function selectPage(pageNum, opts = {}) {
@@ -1281,6 +1344,11 @@
                 (page.choices || []).forEach((choice, index) => {
                     const target = Number(choice.page);
                     const targetExists = Boolean(draft[String(target)]);
+                    const targetStatus = pageStatus(target, refs[String(target)] || 0).kind;
+                    const isSharedTarget = targetStatus === 'shared';
+                    let edgeClasses = 'author-edge';
+                    if (!targetExists) edgeClasses += ' missing-target';
+                    else if (isSharedTarget) edgeClasses += ' shared-target';
                     edges.push({
                         group: 'edges',
                         data: {
@@ -1290,7 +1358,7 @@
                             label: choice.label,
                             missing: !targetExists,
                         },
-                        classes: targetExists ? 'author-edge' : 'author-edge missing-target',
+                        classes: edgeClasses,
                     });
                 });
             });
@@ -1329,13 +1397,13 @@
                         'transition-duration': '0.18s',
                     }
                 },
-                { selector: 'node.written', style: { 'background-color': 'var(--green-bg)', 'border-color': 'var(--green-bd)' } },
-                { selector: 'node.unfinished', style: { 'background-color': 'var(--amber-bg)', 'border-color': 'var(--amber-bd)' } },
-                { selector: 'node.terminal', style: { 'background-color': 'var(--gray-bg)', 'border-color': 'var(--gray-bd)', opacity: 0.92 } },
-                { selector: 'node.shared', style: { 'background-color': 'var(--green-bg)', 'border-color': 'var(--purple-bd)', 'border-width': 2.5 } },
-                { selector: 'node.orphan', style: { 'background-color': 'var(--amber-bg)', 'border-color': 'var(--red-bd)', 'border-width': 2 } },
-                { selector: 'node.missing', style: { 'background-color': 'var(--gray-bg)', 'border-color': 'var(--gray-bd)', opacity: 0.45, 'border-style': 'dashed' } },
-                { selector: 'node.selected', style: { 'border-color': 'var(--blue-bd)', 'border-width': 3.5, 'background-color': 'var(--blue-bg)' } },
+                { selector: 'node.written',   style: { 'background-color': '#ecfdf5', 'border-color': '#16a34a' } },
+                { selector: 'node.unfinished', style: { 'background-color': '#fffbeb', 'border-color': '#d97706' } },
+                { selector: 'node.terminal',   style: { 'background-color': '#eef2f7', 'border-color': '#94a3b8', opacity: 0.92 } },
+                { selector: 'node.shared',     style: { 'background-color': '#f5f3ff', 'border-color': '#7c3aed', 'border-width': 3, color: '#4c1d95', 'font-weight': '800' } },
+                { selector: 'node.orphan',     style: { 'background-color': '#fffbeb', 'border-color': '#dc2626', 'border-width': 2 } },
+                { selector: 'node.missing',    style: { 'background-color': '#eef2f7', 'border-color': '#94a3b8', opacity: 0.45, 'border-style': 'dashed' } },
+                { selector: 'node.selected',   style: { 'border-color': '#2563eb', 'border-width': 3.5, 'background-color': '#eff6ff' } },
                 {
                     selector: 'edge', style: {
                         width: 1.6,
@@ -1348,9 +1416,10 @@
                         'transition-duration': '0.18s',
                     }
                 },
-                { selector: 'edge.author-edge', style: { 'line-color': '#94a3b8', 'target-arrow-color': '#94a3b8' } },
-                { selector: 'edge.missing-target', style: { 'line-color': 'var(--red-bd)', 'target-arrow-color': 'var(--red-bd)', 'line-style': 'dashed', opacity: 0.9 } },
-                { selector: 'edge.highlight', style: { 'line-color': 'var(--blue-bd)', 'target-arrow-color': 'var(--blue-bd)', width: 2.8, opacity: 0.95 } },
+                { selector: 'edge.author-edge',    style: { 'line-color': '#94a3b8', 'target-arrow-color': '#94a3b8' } },
+                { selector: 'edge.missing-target', style: { 'line-color': '#dc2626', 'target-arrow-color': '#dc2626', 'line-style': 'dashed', opacity: 0.9 } },
+                { selector: 'edge.shared-target',  style: { 'line-color': '#7c3aed', 'target-arrow-color': '#7c3aed', width: 2.2, opacity: 0.85 } },
+                { selector: 'edge.highlight',      style: { 'line-color': '#2563eb', 'target-arrow-color': '#2563eb', width: 2.8, opacity: 0.95 } },
             ];
         }
 
@@ -1482,6 +1551,7 @@
         function resetDraft() {
             if (!confirm('Reset the draft back to the baseline JSON?')) return;
             draft = clone(baseline.pages || {});
+            dirtyPageSet = new Set();
             selectedPage = String(baseline.meta?.start_page || 2);
             originalSelectionPage = selectedPage;
             saveHandle = null;
@@ -1526,17 +1596,49 @@
                 .replace(/"/g, '&quot;');
         }
 
+        function showSaveFeedback(msg) {
+            const div = el('save-feedback');
+            div.textContent = msg;
+            div.style.display = 'block';
+            clearTimeout(div._timer);
+            div._timer = setTimeout(() => { div.style.display = 'none'; }, 2400);
+        }
+
         // Wire up controls
-        el('btn-save-page').addEventListener('click', savePage);
-        el('btn-delete-page').addEventListener('click', deletePage);
-        el('btn-new-page').addEventListener('click', () => {
-            const nextPage = Math.max(...allPageNumbers()) + 1;
-            selectedPage = String(nextPage);
-            originalSelectionPage = String(nextPage);
-            loadEditor(nextPage);
-            highlightPage(nextPage);
+        el('btn-create-page').addEventListener('click', () => {
+            const pageNum = Number(el('new-page-number').value);
+            if (!Number.isFinite(pageNum) || pageNum <= 0) {
+                alert('Enter a valid page number.');
+                return;
+            }
+            selectedPage = String(pageNum);
+            originalSelectionPage = String(pageNum);
+            loadEditor(pageNum);
+            highlightPage(pageNum);
+            el('new-page-number').value = '';
             el('page-number').focus();
         });
+
+        window.addEventListener('keydown', async e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                if (saveHandle) {
+                    try {
+                        const writable = await saveHandle.createWritable();
+                        await writable.write(JSON.stringify(buildExportPayload(), null, 2));
+                        await writable.close();
+                        showSaveFeedback('Saved to file ✓');
+                    } catch (err) {
+                        showSaveFeedback('Save failed: ' + err.message);
+                    }
+                } else {
+                    saveToFile();
+                }
+            }
+        });
+
+        el('btn-save-page').addEventListener('click', savePage);
+        el('btn-delete-page').addEventListener('click', deletePage);
         el('btn-save-file').addEventListener('click', saveToFile);
         el('btn-download-json').addEventListener('click', downloadJson);
         el('btn-download-beginnings').addEventListener('click', downloadBeginnings);

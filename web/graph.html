@@ -394,7 +394,6 @@
     <h1>Cave of Time — Story Graph</h1>
     <div class="mode-tabs">
       <button class="mode-tab active" id="tab-author">Author View</button>
-      <button class="mode-tab" id="tab-full">Full Graph</button>
     </div>
     <div class="header-spacer"></div>
     <a href="author.html" class="header-link">Author Tool</a>
@@ -655,7 +654,6 @@
     function setMode(mode) {
       currentMode = mode;
       document.getElementById('tab-author').classList.toggle('active', mode === 'author');
-      document.getElementById('tab-full').classList.toggle('active', mode === 'full');
       document.getElementById('legend-author').style.display = mode === 'author' ? '' : 'none';
       document.getElementById('legend-full').style.display = mode === 'full' ? '' : 'none';
       document.getElementById('author-hint').style.display = mode === 'author' ? '' : 'none';
@@ -929,7 +927,6 @@
     document.getElementById('btn-zoom-out').addEventListener('click', () => cy.zoom(cy.zoom() * 0.8));
 
     document.getElementById('tab-author').addEventListener('click', () => setMode('author'));
-    document.getElementById('tab-full').addEventListener('click', () => setMode('full'));
 
     // ── Live sync from reader ──────────────────────────────────────────────────
     // index.html writes cyoa_reader_path to localStorage on every navigation.

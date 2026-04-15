@@ -24,6 +24,15 @@ WEB_BEGINNINGS_PATH = WEB_DIR / "story_beginnings.txt"
 
 
 app = Flask(__name__, static_folder=str(WEB_DIR), static_url_path="")
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0  # disable static file caching
+
+
+@app.after_request
+def no_cache(response):
+    if request.path.endswith((".html", ".js", ".json", ".css", ".txt")):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+    return response
 
 
 def _numeric_keys(mapping: dict) -> list[int]:
