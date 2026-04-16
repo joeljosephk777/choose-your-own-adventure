@@ -1,5 +1,5 @@
 # Deployed Site
-https://app.netlify.com/projects/chooseyourown-adventure/overview
+https://chooseyourown-adventure.netlify.app/
 
 # GitHub Repo
 https://github.com/joeljosephk777/choose-your-own-adventure.git
